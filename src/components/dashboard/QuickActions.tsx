@@ -1,7 +1,7 @@
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Flask, FileText, Send } from "lucide-react";
+import { AlertTriangle, TestTube, FileText, Send } from "lucide-react";
 
 interface QuickActionsProps {
   isEmergencyMode: boolean;
@@ -27,7 +27,7 @@ export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
               : "bg-white border-gray-200 hover:bg-gray-50"
           )}
         >
-          <Flask className={isEmergencyMode ? "h-6 w-6 text-water-light" : "h-6 w-6 text-water-dark"} />
+          <TestTube className={isEmergencyMode ? "h-6 w-6 text-water-light" : "h-6 w-6 text-water-dark"} />
           <span>Run Analysis</span>
         </Button>
 

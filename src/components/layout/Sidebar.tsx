@@ -1,6 +1,6 @@
 
 import { cn } from "@/lib/utils";
-import { Home, Droplets, Flask, FileText, MessageCircle } from "lucide-react";
+import { Home, Droplets, TestTube, FileText, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VoiceCommandButton } from "@/components/ui/voice-command-button";
 
@@ -42,7 +42,7 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
           "w-full justify-start",
           isEmergencyMode ? "text-white hover:bg-gray-800" : "text-gray-700 hover:bg-water-light/50"
         )}>
-          <Flask className="mr-2 h-4 w-4" />
+          <TestTube className="mr-2 h-4 w-4" />
           Treatment Simulator
         </Button>
         
