@@ -1,6 +1,6 @@
 
 import { cn } from "@/lib/utils";
-import { Home, Droplets, TestTube, FileText, MessageCircle, Menu } from "lucide-react";
+import { Home, Droplets, TestTube, FileText, MessageCircle, Brain, BarChart, Camera, Database, Book, AlertTriangle, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { VoiceCommandButton } from "@/components/ui/voice-command-button";
 import { Link, useLocation } from "react-router-dom";
@@ -30,22 +30,26 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
     {
       name: "Water Samples",
       path: "/water-samples",
-      icon: Droplets
+      icon: Droplets,
+      description: "AR Field Assessment"
     },
     {
       name: "Treatment Simulator",
       path: "/treatment-simulator",
-      icon: TestTube
+      icon: TestTube,
+      description: "Interactive Treatment Impact"
     },
     {
-      name: "Reports",
+      name: "AI Reports",
       path: "/reports",
-      icon: FileText
+      icon: FileText,
+      description: "Water Autopsy & Predictions"
     },
     {
       name: "AI Chatbot",
       path: "/ai-chatbot",
-      icon: MessageCircle
+      icon: MessageCircle,
+      description: "Regulatory Assistant"
     }
   ];
 
@@ -59,7 +63,7 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
           "text-lg font-semibold mb-4",
           isEmergencyMode ? "text-water-danger" : "text-water-dark"
         )}>
-          Navigation
+          AI-Powered Solutions
         </h2>
         
         {navigationItems.map((item) => (
@@ -76,7 +80,12 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
           >
             <Link to={item.path}>
               <item.icon className="mr-2 h-4 w-4" />
-              {item.name}
+              <div className="flex flex-col items-start">
+                <span>{item.name}</span>
+                {item.description && (
+                  <span className="text-xs text-muted-foreground mt-0.5">{item.description}</span>
+                )}
+              </div>
             </Link>
           </Button>
         ))}
@@ -103,7 +112,7 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
             <Menu className="h-6 w-6" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-[240px]">
+        <SheetContent side="left" className="p-0 w-[260px]">
           <SidebarContent />
         </SheetContent>
       </Sheet>
@@ -113,7 +122,7 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
   // For desktop, we show the regular sidebar
   return (
     <div className={cn(
-      "w-[240px] h-[calc(100vh-4rem)] flex flex-col p-4 border-r",
+      "w-[260px] h-[calc(100vh-4rem)] flex flex-col p-4 border-r",
       isEmergencyMode ? "bg-black/90 border-water-danger/30" : "bg-white border-water-light/80"
     )}>
       <SidebarContent />

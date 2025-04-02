@@ -21,6 +21,7 @@ interface NavbarProps {
 export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
   const [notificationsCount, setNotificationsCount] = useState(3);
   const isMobile = useIsMobile();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div className={`sticky top-0 z-50 w-full border-b ${isEmergencyMode ? 'bg-black/90 border-water-danger/30' : 'bg-white/90 border-water-light'} backdrop-blur-sm`}>
@@ -36,7 +37,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
 
         {isMobile ? (
           <div className="flex items-center gap-2">
-            <DropdownMenu>
+            <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
               <DropdownMenuTrigger asChild>
                 <Button 
                   variant="ghost" 
@@ -49,6 +50,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
               <DropdownMenuContent 
                 align="end" 
                 className={`w-64 p-2 ${isEmergencyMode ? 'bg-black text-white border-water-danger/30' : 'bg-white text-gray-800 border-water-light'}`}
+                style={{ maxHeight: '90vh', overflowY: 'auto' }}
               >
                 <div className="mb-3 px-2">
                   <ToggleGroup type="single" value={isEmergencyMode ? "emergency" : "clean"} 
@@ -80,35 +82,37 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                   )}
                 </div>
                 
-                <Link to="/">
-                  <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
-                    Dashboard
-                  </DropdownMenuItem>
-                </Link>
-                
-                <Link to="/water-samples">
-                  <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
-                    Water Samples
-                  </DropdownMenuItem>
-                </Link>
-                
-                <Link to="/treatment-simulator">
-                  <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
-                    Treatment Simulator
-                  </DropdownMenuItem>
-                </Link>
-                
-                <Link to="/reports">
-                  <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
-                    Reports
-                  </DropdownMenuItem>
-                </Link>
-                
-                <Link to="/ai-chatbot">
-                  <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
-                    AI Chatbot
-                  </DropdownMenuItem>
-                </Link>
+                <div className="flex flex-col w-full">
+                  <Link to="/" onClick={() => setIsMenuOpen(false)}>
+                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                      Dashboard
+                    </DropdownMenuItem>
+                  </Link>
+                  
+                  <Link to="/water-samples" onClick={() => setIsMenuOpen(false)}>
+                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                      Water Samples
+                    </DropdownMenuItem>
+                  </Link>
+                  
+                  <Link to="/treatment-simulator" onClick={() => setIsMenuOpen(false)}>
+                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                      Treatment Simulator
+                    </DropdownMenuItem>
+                  </Link>
+                  
+                  <Link to="/reports" onClick={() => setIsMenuOpen(false)}>
+                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                      AI Reports
+                    </DropdownMenuItem>
+                  </Link>
+                  
+                  <Link to="/ai-chatbot" onClick={() => setIsMenuOpen(false)}>
+                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                      AI Chatbot
+                    </DropdownMenuItem>
+                  </Link>
+                </div>
                 
                 <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2 flex justify-between items-center px-2">
                   <div className="flex items-center gap-2">
