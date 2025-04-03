@@ -10,6 +10,10 @@ import TreatmentSimulator from "./pages/TreatmentSimulator";
 import Reports from "./pages/Reports";
 import AIChatbot from "./pages/AIChatbot";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import AccountSettings from "./pages/settings/AccountSettings";
+import NotificationSettings from "./pages/settings/NotificationSettings";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +29,10 @@ const App = () => (
           <Route path="/treatment-simulator" element={<TreatmentSimulator />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/ai-chatbot" element={<AIChatbot />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings/account" element={<AccountSettings />} />
+          <Route path="/settings/notifications" element={<NotificationSettings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
