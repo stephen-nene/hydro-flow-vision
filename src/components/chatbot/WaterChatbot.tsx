@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Mic, SendHorizontal, Brain, FileText, AlertTriangle, Rabbit, Book, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -22,6 +21,10 @@ interface Message {
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
+}
+
+interface WaterChatbotProps {
+  isEmergencyMode?: boolean;
 }
 
 const quickReferenceData = [
@@ -65,7 +68,7 @@ const quickReferenceData = [
   }
 ];
 
-export function WaterChatbot() {
+export function WaterChatbot({ isEmergencyMode = false }: WaterChatbotProps) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -80,8 +83,7 @@ export function WaterChatbot() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
-  // Define SpeechRecognition with proper TypeScript handling
-  const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const recognition = SpeechRecognition ? new SpeechRecognition() : null;
   
   if (recognition) {
@@ -137,7 +139,6 @@ export function WaterChatbot() {
   const handleSendMessage = () => {
     if (!input.trim()) return;
     
-    // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       text: input,
@@ -148,7 +149,6 @@ export function WaterChatbot() {
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInput("");
     
-    // Simulate AI response based on keywords
     setTimeout(() => {
       let responseText = "";
       const lowercaseInput = input.toLowerCase();
@@ -260,7 +260,7 @@ export function WaterChatbot() {
   };
   
   return (
-    <div className="container mx-auto p-4 h-full">
+    <div className={cn("container mx-auto p-4 h-full", isEmergencyMode ? "text-white" : "")}>
       <Tabs defaultValue="chat" className="h-full">
         <TabsList className="grid grid-cols-3 mb-4">
           <TabsTrigger value="chat" className="flex items-center gap-2">
@@ -278,7 +278,7 @@ export function WaterChatbot() {
         </TabsList>
         
         <TabsContent value="chat" className="h-[80vh] flex flex-col">
-          <Card className="flex-1 flex flex-col">
+          <Card className={cn("flex-1 flex flex-col", isEmergencyMode ? "bg-gray-900 border-water-danger/30" : "")}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <Avatar>
@@ -287,7 +287,7 @@ export function WaterChatbot() {
                 </Avatar>
                 <div>
                   <CardTitle>HydraLex AI Assistant</CardTitle>
-                  <CardDescription>Natural language water quality regulations assistant</CardDescription>
+                  <CardDescription className={isEmergencyMode ? "text-gray-400" : ""}>Natural language water quality regulations assistant</CardDescription>
                 </div>
               </div>
             </CardHeader>
@@ -306,7 +306,7 @@ export function WaterChatbot() {
                         "max-w-[80%] rounded-lg p-4",
                         message.sender === "user"
                           ? "bg-water-dark text-white"
-                          : "bg-gray-100 text-gray-800"
+                          : isEmergencyMode ? "bg-gray-800 text-gray-100" : "bg-gray-100 text-gray-800"
                       )}
                     >
                       <p>{message.text}</p>
@@ -324,7 +324,10 @@ export function WaterChatbot() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className={isListening ? "bg-water-danger text-white animate-pulse" : ""}
+                  className={cn(
+                    isListening ? "bg-water-danger text-white animate-pulse" : "",
+                    isEmergencyMode ? "border-gray-700 text-gray-300" : ""
+                  )}
                   onClick={toggleListening}
                 >
                   <Mic className="h-4 w-4" />
@@ -334,9 +337,9 @@ export function WaterChatbot() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="flex-1"
+                  className={cn("flex-1", isEmergencyMode ? "bg-gray-800 border-gray-700 text-white" : "")}
                 />
-                <Button onClick={handleSendMessage}>
+                <Button onClick={handleSendMessage} className={isEmergencyMode ? "bg-water-dark hover:bg-water-dark/90" : ""}>
                   <SendHorizontal className="h-4 w-4 mr-2" />
                   Send
                 </Button>
@@ -346,23 +349,23 @@ export function WaterChatbot() {
         </TabsContent>
         
         <TabsContent value="compliance" className="h-[80vh]">
-          <Card className="h-full flex flex-col">
+          <Card className={cn("h-full flex flex-col", isEmergencyMode ? "bg-gray-900 border-water-danger/30 text-white" : "")}>
             <CardHeader>
               <CardTitle>Compliance Tools</CardTitle>
-              <CardDescription>Generate reports and assessments for water quality compliance</CardDescription>
+              <CardDescription className={isEmergencyMode ? "text-gray-400" : ""}>Generate reports and assessments for water quality compliance</CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card>
+                <Card className={isEmergencyMode ? "bg-gray-800 border-gray-700" : ""}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg">Compliance Report</CardTitle>
-                    <CardDescription>Generate a comprehensive compliance report based on your water quality data</CardDescription>
+                    <CardDescription className={isEmergencyMode ? "text-gray-400" : ""}>Generate a comprehensive compliance report based on your water quality data</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className={cn("text-sm mb-4", isEmergencyMode ? "text-gray-400" : "text-gray-600")}>
                       This report evaluates your current compliance status with federal, state, and local regulations.
                     </p>
-                    <ul className="text-sm text-gray-600 list-disc pl-4 mb-4">
+                    <ul className={cn("text-sm list-disc pl-4 mb-4", isEmergencyMode ? "text-gray-400" : "text-gray-600")}>
                       <li>SDWA compliance evaluation</li>
                       <li>CWA requirements analysis</li>
                       <li>Local regulation compliance</li>
@@ -370,17 +373,21 @@ export function WaterChatbot() {
                     </ul>
                   </CardContent>
                   <CardFooter>
-                    <Button className="w-full" onClick={generateComplianceReport}>
+                    <Button 
+                      className="w-full" 
+                      onClick={generateComplianceReport}
+                      variant={isEmergencyMode ? "default" : "default"}
+                    >
                       <FileText className="h-4 w-4 mr-2" />
                       Generate Report
                     </Button>
                   </CardFooter>
                 </Card>
                 
-                <Card>
+                <Card className={isEmergencyMode ? "bg-gray-800 border-gray-700" : ""}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg">Risk Assessment</CardTitle>
-                    <CardDescription>Evaluate potential risks in your water quality management system</CardDescription>
+                    <CardDescription className={isEmergencyMode ? "text-gray-400" : ""}>Evaluate potential risks in your water quality management system</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-gray-600 mb-4">
@@ -401,10 +408,10 @@ export function WaterChatbot() {
                   </CardFooter>
                 </Card>
                 
-                <Card>
+                <Card className={isEmergencyMode ? "bg-gray-800 border-gray-700" : ""}>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg">Regulatory Cross-Check</CardTitle>
-                    <CardDescription>Compare your data against all applicable regulations</CardDescription>
+                    <CardDescription className={isEmergencyMode ? "text-gray-400" : ""}>Compare your data against all applicable regulations</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-gray-600 mb-4">
@@ -449,10 +456,10 @@ export function WaterChatbot() {
         </TabsContent>
         
         <TabsContent value="quickref" className="h-[80vh]">
-          <Card className="h-full flex flex-col">
+          <Card className={cn("h-full flex flex-col", isEmergencyMode ? "bg-gray-900 border-water-danger/30 text-white" : "")}>
             <CardHeader>
               <CardTitle>Quick Reference</CardTitle>
-              <CardDescription>Essential information for water quality management</CardDescription>
+              <CardDescription className={isEmergencyMode ? "text-gray-400" : ""}>Essential information for water quality management</CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
               <div className="flex h-full">
@@ -462,7 +469,9 @@ export function WaterChatbot() {
                       <Button 
                         key={item.id}
                         variant={selectedQuickRef === item.id ? "default" : "outline"}
-                        className="w-full justify-start"
+                        className={cn("w-full justify-start", 
+                          isEmergencyMode && selectedQuickRef !== item.id ? "border-gray-700 text-gray-300" : ""
+                        )}
                         onClick={() => setSelectedQuickRef(item.id)}
                       >
                         {item.title}

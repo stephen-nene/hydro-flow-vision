@@ -1,9 +1,8 @@
-
 import { useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, AlertTriangle, DropletIcon, Clock, MapPin, Flask, FileText, Ban, Activity } from "lucide-react";
+import { ChevronLeft, ChevronRight, AlertTriangle, DropletIcon, Clock, MapPin, TestTube, FileText, Ban, Activity } from "lucide-react";
 import { WaterSample } from "@/types/water";
 import { WaterSampleVisual } from "@/components/dashboard/WaterSampleVisual";
 import {
@@ -98,13 +97,11 @@ export function PriorityCasesCarousel({ cases, isEmergencyMode }: PriorityCasesC
     );
   }
 
-  // Add more cases for demonstration purposes
   const expandedCases = [...cases];
   if (expandedCases.length < 5) {
-    // Clone and modify some cases if we don't have enough
     const additionalCases = cases.map(c => ({
       ...c,
-      id: `${c.id}-clone`,
+      id: Number(`${c.id}-1`),
       location: `${c.location} East`,
       toxicityLevel: Math.max(30, c.toxicityLevel - 20),
       collectionDate: new Date().toLocaleDateString()
@@ -240,7 +237,6 @@ export function PriorityCasesCarousel({ cases, isEmergencyMode }: PriorityCasesC
         <ChevronRight className="h-6 w-6" />
       </Button>
       
-      {/* Case Details Dialog */}
       {selectedCase && (
         <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -292,7 +288,7 @@ export function PriorityCasesCarousel({ cases, isEmergencyMode }: PriorityCasesC
                       </div>
                       
                       <div className="flex items-center space-x-2">
-                        <Flask className="h-4 w-4 text-gray-500" />
+                        <TestTube className="h-4 w-4 text-gray-500" />
                         <div>
                           <h4 className="text-sm font-medium">Sample Type</h4>
                           <p className="text-sm text-gray-500">Municipal Water</p>
@@ -591,7 +587,6 @@ export function PriorityCasesCarousel({ cases, isEmergencyMode }: PriorityCasesC
               <TabsContent value="contaminants" className="mt-4">
                 <div className="space-y-4">
                   {selectedCase.contaminants.map((contaminant, index) => {
-                    // Generate some fake data about each contaminant
                     const isHighRisk = selectedCase.toxicityLevel > 70 && index < 2;
                     const isMediumRisk = selectedCase.toxicityLevel > 40 && index >= 2 && index < 4;
                     
@@ -1005,7 +1000,7 @@ export function PriorityCasesCarousel({ cases, isEmergencyMode }: PriorityCasesC
             <DialogFooter className="flex justify-between mt-4 space-x-2">
               <div className="flex space-x-2">
                 <Button variant="outline" size="sm" onClick={handleSendToLab}>
-                  <Flask className="h-4 w-4 mr-2" />
+                  <TestTube className="h-4 w-4 mr-2" />
                   Request Additional Testing
                 </Button>
                 <Button variant="outline" size="sm" onClick={handleScheduleFollowUp}>
