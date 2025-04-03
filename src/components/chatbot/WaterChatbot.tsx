@@ -1,109 +1,105 @@
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Mic, MicOff, Bot, User } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Mic, SendHorizontal, Brain, FileText, AlertTriangle, Rabbit, Book, Mail } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Link } from "react-router-dom";
 
 interface Message {
   id: string;
-  content: string;
+  text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
 }
 
-interface WaterChatbotProps {
-  isEmergencyMode: boolean;
-}
-
-// Knowledge base for water treatment
-const waterKnowledgeBase = [
+const quickReferenceData = [
   {
-    q: ["lead", "0.3ppm", "kenya", "illegal"],
-    a: "Yes, 0.3ppm lead exceeds Kenya's Environmental Management and Coordination (Water Quality) Regulations limit of 0.05ppm for drinking water. I recommend the Ion Exchange Filter (HYD-F103) for remediation. This is a serious violation that requires immediate action."
+    id: 'regulations',
+    title: 'Water Regulations',
+    description: 'Key regulations for water quality compliance',
+    content: [
+      { title: 'Safe Drinking Water Act (SDWA)', description: 'The main federal law that ensures the quality of drinking water in the United States.' },
+      { title: 'Clean Water Act (CWA)', description: 'Regulates discharges of pollutants into waters and quality standards for surface waters.' },
+      { title: 'EPA National Primary Drinking Water Regulations', description: 'Legal limits for contaminants in drinking water.' },
+      { title: 'Lead and Copper Rule', description: 'Protects public health by minimizing lead and copper levels in drinking water.' },
+      { title: 'Groundwater Rule', description: 'Provides increased protection against microbial pathogens in public water systems.' }
+    ]
   },
   {
-    q: ["chlorine", "residual", "treatment"],
-    a: "Chlorine residual should be maintained at 0.2-0.5 mg/L in distribution systems. For treatment, maintain a CT value (concentration × time) of at least 30 mg-min/L for effective disinfection. Use sodium/calcium hypochlorite for household applications and gas chlorine for larger systems."
+    id: 'treatments',
+    title: 'Treatment Methods',
+    description: 'Common water treatment approaches',
+    content: [
+      { title: 'Coagulation and Flocculation', description: 'Process where chemicals with a positive charge are added to neutralize the negative charge of dissolved particles in the water.' },
+      { title: 'Sedimentation', description: 'The heavy particles (floc) settle to the bottom due to their weight, forming a sludge.' },
+      { title: 'Filtration', description: 'Water passes through various filtration materials to remove dissolved particles, parasites, bacteria, viruses, and fungi.' },
+      { title: 'Disinfection', description: 'Addition of disinfectant (like chlorine, chloramine, or UV light) to kill any remaining parasites, bacteria, and viruses.' },
+      { title: 'Ozonation', description: 'Uses ozone to kill microorganisms and break down organic compounds.' },
+      { title: 'UV Treatment', description: 'Uses ultraviolet light to kill bacteria, viruses, and other pathogens without chemicals.' }
+    ]
   },
   {
-    q: ["turbidity", "standards", "who"],
-    a: "WHO recommends turbidity levels below 1 NTU for effective disinfection, and ideally below 0.2 NTU for optimal treatment. High turbidity can shield microorganisms from disinfection and increase chlorine demand. For remediation, consider sand filtration or coagulation-flocculation processes."
-  },
-  {
-    q: ["arsenic", "removal", "treatment"],
-    a: "For arsenic removal, I recommend: 1) Iron-based adsorption media (effectiveness: 95%), 2) Reverse osmosis (effectiveness: 90%), or 3) Coagulation with iron salts followed by filtration (effectiveness: 85%). The HYD-A200 Arsenic Filter is our most cost-effective solution for levels up to 0.5ppm."
-  },
-  {
-    q: ["fluoride", "concentration", "health"],
-    a: "Optimal fluoride concentration for dental health is 0.7-1.2 mg/L. Concentrations above 1.5 mg/L may cause dental fluorosis, while levels above 4 mg/L can cause skeletal fluorosis. For high fluoride areas, I recommend activated alumina filters or reverse osmosis systems."
-  },
-  {
-    q: ["bacteria", "microbial", "coliform", "treatment"],
-    a: "For microbial contamination, recommended treatments include: 1) Chlorination (CT value of 30-60 mg-min/L), 2) UV disinfection (40 mJ/cm² dose), 3) Ozonation (0.5-2 mg/L), or 4) Membrane filtration (0.1-1.0 micron pore size). Our HYD-UV100 system combines UV with 0.5-micron filtration for 99.9999% bacteria removal."
-  },
-  {
-    q: ["regulations", "standards", "compliance"],
-    a: "Key water quality regulations include: WHO Guidelines, EU Drinking Water Directive, US EPA Safe Drinking Water Act, and country-specific standards. Compliance requires regular monitoring, documentation, proper treatment, and prompt reporting of violations. Our HYD-Comply software automates compliance tracking across all major regulatory frameworks."
-  },
-  {
-    q: ["ph", "acidity", "alkalinity"],
-    a: "Optimal pH range for drinking water is 6.5-8.5. For acidic water (pH < 6.5), use limestone filters or soda ash injection. For alkaline water (pH > 8.5), use acid injection systems with pH controllers. pH affects disinfection efficiency, with chlorine working best between pH 6.5-7.5."
-  },
-  {
-    q: ["filter", "replace", "maintenance"],
-    a: "Filter replacement schedules: 1) Sediment pre-filters: 3-6 months, 2) Carbon filters: 6-12 months, 3) Reverse osmosis membranes: 2-3 years, 4) UV lamps: 12 months. Proper maintenance improves efficacy and extends system life. Our HYD-Alert system can monitor filter status and automatically notify when replacement is needed."
-  },
-  {
-    q: ["hydra", "about", "company", "product"],
-    a: "Hydra is a leading water quality technology company specializing in advanced monitoring, treatment, and prediction systems. Our core products include HYD-Lens (AR monitoring), HYD-Filter (treatment systems), HYD-Score (quality analytics), and HYD-Lex (regulatory compliance). Our mission is to ensure safe water through innovation and AI-powered solutions."
+    id: 'contaminants',
+    title: 'Contaminants Guide',
+    description: 'Information about common water contaminants',
+    content: [
+      { title: 'Lead', description: 'A toxic metal that can cause serious health effects, especially in children. Enters water through corrosion of plumbing materials.' },
+      { title: 'Arsenic', description: 'A naturally occurring element that can enter water from natural deposits or industrial/agricultural practices.' },
+      { title: 'E. coli', description: 'Bacteria indicating possible sewage contamination and the presence of other harmful organisms.' },
+      { title: 'Nitrates', description: 'Compounds that can enter water through agricultural runoff, wastewater discharge, or from natural mineral deposits.' },
+      { title: 'PFAS', description: 'Per- and polyfluoroalkyl substances are man-made chemicals used in many industrial applications and consumer products.' },
+      { title: 'Cryptosporidium', description: 'A parasite that can cause gastrointestinal illness, particularly dangerous for immune-compromised individuals.' }
+    ]
   }
 ];
 
-export const WaterChatbot = ({ isEmergencyMode }: WaterChatbotProps) => {
+export function WaterChatbot() {
+  const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
-      content: "Welcome to HydraLex! How can I assist you with water regulations today?",
-      sender: 'bot',
+      id: "welcome",
+      text: "Hello! I'm HydraLex, your AI water quality assistant. How can I help you today?",
+      sender: "bot",
       timestamp: new Date()
     }
   ]);
-  const [inputMessage, setInputMessage] = useState("");
   const [isListening, setIsListening] = useState(false);
-  const [isThinking, setIsThinking] = useState(false);
+  const [selectedQuickRef, setSelectedQuickRef] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
-  // Speech recognition setup
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  // Define SpeechRecognition with proper TypeScript handling
+  const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
   const recognition = SpeechRecognition ? new SpeechRecognition() : null;
   
   if (recognition) {
     recognition.continuous = false;
     recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
     
-    recognition.onresult = (event) => {
+    recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setInputMessage(transcript);
+      setInput(transcript);
       setIsListening(false);
-      
-      // Auto send after voice recognition
-      setTimeout(() => {
-        sendMessage(transcript);
-      }, 500);
     };
     
-    recognition.onerror = (event) => {
-      console.error('Speech recognition error', event.error);
+    recognition.onerror = () => {
       setIsListening(false);
       toast({
-        title: "Voice recognition error",
-        description: "Please try again or type your message",
-        variant: "destructive",
+        title: "Voice Recognition Error",
+        description: "Could not process voice input. Please try again or type your question.",
+        variant: "destructive"
       });
     };
     
@@ -112,197 +108,376 @@ export const WaterChatbot = ({ isEmergencyMode }: WaterChatbotProps) => {
     };
   }
   
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-  
   const toggleListening = () => {
     if (!recognition) {
       toast({
-        title: "Voice recognition not supported",
-        description: "Your browser doesn't support voice recognition. Please type your message instead.",
-        variant: "destructive",
+        title: "Voice Recognition Unavailable",
+        description: "Your browser doesn't support voice recognition. Please type your question instead.",
+        variant: "destructive"
       });
       return;
     }
     
     if (isListening) {
       recognition.stop();
-      setIsListening(false);
     } else {
+      recognition.start();
       setIsListening(true);
-      try {
-        recognition.start();
-        toast({
-          title: "Listening...",
-          description: "Speak your water quality question",
-        });
-      } catch (error) {
-        console.error('Speech recognition error', error);
-        setIsListening(false);
-      }
     }
   };
   
-  const sendMessage = (content = inputMessage) => {
-    if (!content.trim()) return;
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  
+  const handleSendMessage = () => {
+    if (!input.trim()) return;
     
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: content.trim(),
-      sender: 'user',
+      text: input,
+      sender: "user",
       timestamp: new Date()
     };
     
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage("");
-    setIsThinking(true);
+    setMessages(prevMessages => [...prevMessages, userMessage]);
+    setInput("");
     
-    // Simulate AI thinking and responding
+    // Simulate AI response based on keywords
     setTimeout(() => {
-      const response = generateResponse(content);
+      let responseText = "";
+      const lowercaseInput = input.toLowerCase();
+      
+      if (lowercaseInput.includes("regulations") || lowercaseInput.includes("compliance")) {
+        responseText = "Water quality regulations include the Safe Drinking Water Act (SDWA) and Clean Water Act (CWA). Each state may have additional regulations. Would you like me to generate a compliance report?";
+      } else if (lowercaseInput.includes("treatment") || lowercaseInput.includes("purify")) {
+        responseText = "Common water treatment methods include coagulation, filtration, disinfection, and membrane filtration. The best approach depends on your specific contaminants and requirements.";
+      } else if (lowercaseInput.includes("contaminant") || lowercaseInput.includes("pollution")) {
+        responseText = "Common water contaminants include microorganisms (bacteria, viruses), chemicals (lead, pesticides), and physical pollutants (sediment). I can help identify potential contaminants based on your water quality data.";
+      } else if (lowercaseInput.includes("hello") || lowercaseInput.includes("hi")) {
+        responseText = "Hello! I'm HydraLex, your water quality AI assistant. How can I help you today?";
+      } else if (lowercaseInput.includes("help")) {
+        responseText = "I can assist with water quality regulations, treatment methods, contaminant identification, risk assessment, and generating compliance reports. Just let me know what you need help with!";
+      } else {
+        responseText = "I understand you're asking about water quality management. Could you provide more specific details about your question? I can help with regulations, treatment methods, contaminant analysis, and more.";
+      }
       
       const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: response,
-        sender: 'bot',
+        id: Date.now().toString(),
+        text: responseText,
+        sender: "bot",
         timestamp: new Date()
       };
       
-      setMessages(prev => [...prev, botMessage]);
-      setIsThinking(false);
-    }, 1500);
+      setMessages(prevMessages => [...prevMessages, botMessage]);
+    }, 1000);
   };
   
-  const generateResponse = (query: string): string => {
-    // Simple keyword matching from knowledge base
-    const lowerQuery = query.toLowerCase();
-    
-    // Try to find an exact match
-    for (const item of waterKnowledgeBase) {
-      if (item.q.every(keyword => lowerQuery.includes(keyword.toLowerCase()))) {
-        return item.a;
-      }
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSendMessage();
     }
-    
-    // Try partial matching
-    let bestMatch = null;
-    let maxMatchCount = 0;
-    
-    for (const item of waterKnowledgeBase) {
-      const matchCount = item.q.filter(keyword => 
-        lowerQuery.includes(keyword.toLowerCase())
-      ).length;
-      
-      if (matchCount > maxMatchCount) {
-        maxMatchCount = matchCount;
-        bestMatch = item;
-      }
-    }
-    
-    if (bestMatch && maxMatchCount > 0) {
-      return bestMatch.a;
-    }
-    
-    // Default responses
-    if (lowerQuery.includes("hello") || lowerQuery.includes("hi")) {
-      return "Hello! I'm HydraLex, your water regulations assistant. How can I help you today?";
-    }
-    
-    if (lowerQuery.includes("thank")) {
-      return "You're welcome! If you need any more information about water regulations or treatment solutions, feel free to ask.";
-    }
-    
-    // Generic fallback
-    return "I don't have specific information on that topic yet. For water treatment questions, try asking about contaminants (lead, arsenic, bacteria), regulations, or specific treatments. How else can I assist you?";
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendMessage();
+  const generateComplianceReport = () => {
+    toast({
+      title: "Compliance Report Generated",
+      description: "The compliance report has been generated and is available for download.",
+    });
+    
+    const botMessage: Message = {
+      id: Date.now().toString(),
+      text: "I've generated a compliance report based on your water quality data. The report includes an analysis of your compliance status with relevant regulations and recommendations for addressing any issues.",
+      sender: "bot",
+      timestamp: new Date()
+    };
+    
+    setMessages(prevMessages => [...prevMessages, botMessage]);
   };
   
-  const formatDate = (date: Date) => {
-    return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  const generateRiskAssessment = () => {
+    toast({
+      title: "Risk Assessment Completed",
+      description: "The water quality risk assessment has been generated.",
+    });
+    
+    const botMessage: Message = {
+      id: Date.now().toString(),
+      text: "I've completed a comprehensive risk assessment of your water system. The assessment identifies potential vulnerabilities and provides a prioritized list of recommended actions to mitigate risks.",
+      sender: "bot",
+      timestamp: new Date()
+    };
+    
+    setMessages(prevMessages => [...prevMessages, botMessage]);
+  };
+  
+  const performRegulatoryCheck = () => {
+    toast({
+      title: "Regulatory Cross-Check Complete",
+      description: "Your water quality data has been checked against all applicable regulations.",
+    });
+    
+    const botMessage: Message = {
+      id: Date.now().toString(),
+      text: "I've cross-checked your water quality data against all applicable federal, state, and local regulations. You are currently compliant with 87% of requirements. I've identified 3 areas that need attention to achieve full compliance.",
+      sender: "bot",
+      timestamp: new Date()
+    };
+    
+    setMessages(prevMessages => [...prevMessages, botMessage]);
+  };
+  
+  const renderQuickReferenceContent = () => {
+    if (!selectedQuickRef) return null;
+    
+    const selectedData = quickReferenceData.find(item => item.id === selectedQuickRef);
+    if (!selectedData) return null;
+    
+    return (
+      <div className="p-4">
+        <h3 className="text-xl font-semibold mb-4">{selectedData.title}</h3>
+        <p className="text-gray-600 mb-6">{selectedData.description}</p>
+        
+        <div className="space-y-4">
+          {selectedData.content.map((item, index) => (
+            <Card key={index}>
+              <CardHeader className="py-3">
+                <CardTitle className="text-md">{item.title}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-600">{item.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
   };
   
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div key={message.id} className={`flex gap-3 ${message.sender === 'bot' ? '' : 'justify-end'}`}>
-            {message.sender === 'bot' && (
-              <Avatar>
-                <AvatarFallback className="bg-water-dark text-white">AI</AvatarFallback>
-                <AvatarImage src="/hydra-bot.png" />
-              </Avatar>
-            )}
-            
-            <div className={`max-w-[80%] space-y-1`}>
-              <div className={`p-3 rounded-lg ${
-                message.sender === 'bot'
-                  ? isEmergencyMode ? 'bg-gray-900' : 'bg-gray-100'
-                  : 'bg-water-dark text-white'
-              }`}>
-                <p className="text-sm">{message.content}</p>
+    <div className="container mx-auto p-4 h-full">
+      <Tabs defaultValue="chat" className="h-full">
+        <TabsList className="grid grid-cols-3 mb-4">
+          <TabsTrigger value="chat" className="flex items-center gap-2">
+            <Brain className="h-4 w-4" />
+            <span>AI Assistant</span>
+          </TabsTrigger>
+          <TabsTrigger value="compliance" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            <span>Compliance Tools</span>
+          </TabsTrigger>
+          <TabsTrigger value="quickref" className="flex items-center gap-2">
+            <Book className="h-4 w-4" />
+            <span>Quick Reference</span>
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="chat" className="h-[80vh] flex flex-col">
+          <Card className="flex-1 flex flex-col">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarImage src="/assets/hydra-ai.png" />
+                  <AvatarFallback className="bg-water-dark text-white">HA</AvatarFallback>
+                </Avatar>
+                <div>
+                  <CardTitle>HydraLex AI Assistant</CardTitle>
+                  <CardDescription>Natural language water quality regulations assistant</CardDescription>
+                </div>
               </div>
-              <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'} ${message.sender === 'user' ? 'text-right' : ''}`}>
-                {formatDate(message.timestamp)}
-              </p>
-            </div>
-            
-            {message.sender === 'user' && (
-              <Avatar>
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>ME</AvatarFallback>
-              </Avatar>
-            )}
-          </div>
-        ))}
-        
-        {isThinking && (
-          <div className="flex gap-3">
-            <Avatar>
-              <AvatarFallback className="bg-water-dark text-white">AI</AvatarFallback>
-            </Avatar>
-            <div className={`p-3 rounded-lg ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-100'}`}>
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0s' }}></div>
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+            </CardHeader>
+            <CardContent className="flex-1 overflow-y-auto">
+              <div className="space-y-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={cn(
+                      "flex",
+                      message.sender === "user" ? "justify-end" : "justify-start"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "max-w-[80%] rounded-lg p-4",
+                        message.sender === "user"
+                          ? "bg-water-dark text-white"
+                          : "bg-gray-100 text-gray-800"
+                      )}
+                    >
+                      <p>{message.text}</p>
+                      <p className="text-xs mt-1 opacity-70">
+                        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
               </div>
-            </div>
-          </div>
-        )}
+            </CardContent>
+            <CardFooter className="border-t p-4">
+              <div className="flex w-full items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={isListening ? "bg-water-danger text-white animate-pulse" : ""}
+                  onClick={toggleListening}
+                >
+                  <Mic className="h-4 w-4" />
+                </Button>
+                <Input
+                  placeholder="Ask about water regulations, treatment methods, or contaminants..."
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  className="flex-1"
+                />
+                <Button onClick={handleSendMessage}>
+                  <SendHorizontal className="h-4 w-4 mr-2" />
+                  Send
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+        </TabsContent>
         
-        <div ref={messagesEndRef} />
-      </div>
-      
-      <form onSubmit={handleSubmit} className="p-4 border-t flex gap-2">
-        <Button 
-          type="button" 
-          size="icon" 
-          variant={isListening ? "default" : "outline"} 
-          onClick={toggleListening}
-          className={isListening ? "bg-water-danger text-white" : ""}
-        >
-          {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-        </Button>
+        <TabsContent value="compliance" className="h-[80vh]">
+          <Card className="h-full flex flex-col">
+            <CardHeader>
+              <CardTitle>Compliance Tools</CardTitle>
+              <CardDescription>Generate reports and assessments for water quality compliance</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Compliance Report</CardTitle>
+                    <CardDescription>Generate a comprehensive compliance report based on your water quality data</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 mb-4">
+                      This report evaluates your current compliance status with federal, state, and local regulations.
+                    </p>
+                    <ul className="text-sm text-gray-600 list-disc pl-4 mb-4">
+                      <li>SDWA compliance evaluation</li>
+                      <li>CWA requirements analysis</li>
+                      <li>Local regulation compliance</li>
+                      <li>Recommended corrective actions</li>
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" onClick={generateComplianceReport}>
+                      <FileText className="h-4 w-4 mr-2" />
+                      Generate Report
+                    </Button>
+                  </CardFooter>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Risk Assessment</CardTitle>
+                    <CardDescription>Evaluate potential risks in your water quality management system</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Identifies vulnerabilities and provides a prioritized list of actions to mitigate risks.
+                    </p>
+                    <ul className="text-sm text-gray-600 list-disc pl-4 mb-4">
+                      <li>Contamination risk analysis</li>
+                      <li>Infrastructure vulnerability assessment</li>
+                      <li>Emergency response readiness</li>
+                      <li>Risk mitigation strategies</li>
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" onClick={generateRiskAssessment}>
+                      <AlertTriangle className="h-4 w-4 mr-2" />
+                      Run Assessment
+                    </Button>
+                  </CardFooter>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Regulatory Cross-Check</CardTitle>
+                    <CardDescription>Compare your data against all applicable regulations</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Cross-checks your water quality data against federal, state, and local regulatory requirements.
+                    </p>
+                    <ul className="text-sm text-gray-600 list-disc pl-4 mb-4">
+                      <li>Multi-jurisdiction compliance</li>
+                      <li>Regulatory conflict analysis</li>
+                      <li>Compliance gap identification</li>
+                      <li>Historical compliance trends</li>
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" onClick={performRegulatoryCheck}>
+                      <Rabbit className="h-4 w-4 mr-2" />
+                      Run Cross-Check
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
+              
+              <div className="mt-8 bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold mb-2">Additional Resources</h3>
+                <p className="text-gray-600 mb-4">
+                  These tools leverage the Hydra AI system to analyze your water quality data and provide actionable insights. For more detailed analysis, our team of water quality experts is available for consultation.
+                </p>
+                <div className="flex space-x-4">
+                  <Link to="/reports">
+                    <Button variant="outline">
+                      <FileText className="h-4 w-4 mr-2" />
+                      View Historical Reports
+                    </Button>
+                  </Link>
+                  <Button variant="outline">
+                    <Mail className="h-4 w-4 mr-2" />
+                    Request Expert Consultation
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
         
-        <Input
-          placeholder={isListening ? "Listening..." : "Ask about water regulations..."}
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          className={isEmergencyMode ? 'bg-gray-900 border-gray-800' : ''}
-          disabled={isListening}
-        />
-        
-        <Button type="submit" size="icon" disabled={!inputMessage.trim() && !isListening}>
-          <Send className="h-4 w-4" />
-        </Button>
-      </form>
+        <TabsContent value="quickref" className="h-[80vh]">
+          <Card className="h-full flex flex-col">
+            <CardHeader>
+              <CardTitle>Quick Reference</CardTitle>
+              <CardDescription>Essential information for water quality management</CardDescription>
+            </CardHeader>
+            <CardContent className="flex-1">
+              <div className="flex h-full">
+                <div className="w-1/3 border-r pr-4">
+                  <nav className="space-y-2">
+                    {quickReferenceData.map(item => (
+                      <Button 
+                        key={item.id}
+                        variant={selectedQuickRef === item.id ? "default" : "outline"}
+                        className="w-full justify-start"
+                        onClick={() => setSelectedQuickRef(item.id)}
+                      >
+                        {item.title}
+                      </Button>
+                    ))}
+                  </nav>
+                </div>
+                <div className="w-2/3 pl-4">
+                  {renderQuickReferenceContent()}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
-};
+}

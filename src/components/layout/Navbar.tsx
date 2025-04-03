@@ -1,27 +1,131 @@
 
-import { Bell, Menu, Settings, X } from "lucide-react";
+import { Bell, Menu, Settings, Sun, Moon, User, LogOut, HelpCircle, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useToast } from "@/hooks/use-toast";
 import { 
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuTrigger 
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal
 } from "@/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose
+} from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 interface NavbarProps {
   isEmergencyMode: boolean;
   setIsEmergencyMode: (value: boolean) => void;
 }
 
+interface NotificationType {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+  read: boolean;
+  priority: 'low' | 'medium' | 'high';
+  type: 'system' | 'alert' | 'update';
+}
+
 export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
   const [notificationsCount, setNotificationsCount] = useState(3);
+  const [notifications, setNotifications] = useState<NotificationType[]>([
+    {
+      id: '1',
+      title: 'Critical Water Quality Alert',
+      description: 'High toxicity levels detected in Downtown reservoir. Immediate action required.',
+      time: '10 minutes ago',
+      read: false,
+      priority: 'high',
+      type: 'alert'
+    },
+    {
+      id: '2',
+      title: 'System Update Complete',
+      description: 'Hydra platform has been updated to version 2.3.0 with new analytics features.',
+      time: '1 hour ago',
+      read: false,
+      priority: 'medium',
+      type: 'system'
+    },
+    {
+      id: '3',
+      title: 'New Water Sample Added',
+      description: 'A new water sample from Westside Plant has been added to the database.',
+      time: '3 hours ago',
+      read: false,
+      priority: 'low',
+      type: 'update'
+    }
+  ]);
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Update notification count whenever notifications change
+    setNotificationsCount(notifications.filter(n => !n.read).length);
+  }, [notifications]);
+
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    toast({
+      title: "Notifications cleared",
+      description: "All notifications have been marked as read",
+    });
+  };
+
+  const markAsRead = (id: string) => {
+    setNotifications(prev => 
+      prev.map(n => n.id === id ? { ...n, read: true } : n)
+    );
+  };
+
+  const clearNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    toast({
+      description: "Notification removed",
+    });
+  };
+
+  const getPriorityColor = (priority: 'low' | 'medium' | 'high') => {
+    switch (priority) {
+      case 'high': return 'bg-water-danger/10 text-water-danger border-water-danger/30';
+      case 'medium': return 'bg-amber-500/10 text-amber-600 border-amber-500/30';
+      case 'low': return 'bg-green-500/10 text-green-600 border-green-500/30';
+    }
+  };
+
+  const getTypeIcon = (type: 'system' | 'alert' | 'update') => {
+    switch (type) {
+      case 'alert': return <Bell className="h-4 w-4 text-water-danger" />;
+      case 'system': return <Settings className="h-4 w-4 text-blue-500" />;
+      case 'update': return <ChevronDown className="h-4 w-4 text-green-500" />;
+    }
+  };
 
   return (
     <div className={`sticky top-0 z-50 w-full border-b ${isEmergencyMode ? 'bg-black/90 border-water-danger/30' : 'bg-white/90 border-water-light'} backdrop-blur-sm`}>
@@ -31,7 +135,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
             <span className="font-semibold text-white">H</span>
           </div>
           <span className={`font-semibold text-xl ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
-            Hydra Vision
+            Hydra
           </span>
         </div>
 
@@ -53,19 +157,21 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                 style={{ maxHeight: '90vh', overflowY: 'auto' }}
               >
                 <div className="mb-3 px-2">
-                  <ToggleGroup type="single" value={isEmergencyMode ? "emergency" : "clean"} 
+                  <ToggleGroup type="single" value={isEmergencyMode ? "dark" : "light"} 
                     onValueChange={(value) => {
-                      if (value === "emergency" || value === "clean") {
-                        setIsEmergencyMode(value === "emergency");
+                      if (value === "dark" || value === "light") {
+                        setIsEmergencyMode(value === "dark");
                       }
                     }}
                     className="w-full flex justify-center"
                   >
-                    <ToggleGroupItem value="clean" aria-label="Clean Mode" className="flex-1 data-[state=on]:bg-water-light data-[state=on]:text-water-dark">
-                      Clean Mode
+                    <ToggleGroupItem value="light" aria-label="Light Mode" className="flex-1 data-[state=on]:bg-water-light data-[state=on]:text-water-dark">
+                      <Sun className="h-4 w-4 mr-2" />
+                      Light Mode
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="emergency" aria-label="Emergency Mode" className="flex-1 data-[state=on]:bg-water-danger data-[state=on]:text-white">
-                      Emergency Mode
+                    <ToggleGroupItem value="dark" aria-label="Dark Mode" className="flex-1 data-[state=on]:bg-water-danger data-[state=on]:text-white">
+                      <Moon className="h-4 w-4 mr-2" />
+                      Dark Mode
                     </ToggleGroupItem>
                   </ToggleGroup>
                 </div>
@@ -76,9 +182,9 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                     <span className={`text-sm ${isEmergencyMode ? 'text-gray-400' : 'text-gray-600'}`}>Notifications</span>
                   </div>
                   {notificationsCount > 0 && (
-                    <span className="bg-water-danger text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <Badge variant="destructive" className="bg-water-danger">
                       {notificationsCount}
-                    </span>
+                    </Badge>
                   )}
                 </div>
                 
@@ -120,9 +226,12 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                     <span className={`text-sm ${isEmergencyMode ? 'text-gray-400' : 'text-gray-600'}`}>Settings</span>
                   </div>
                   
-                  <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>WE</AvatarFallback>
+                  <Avatar onClick={() => {
+                    setIsMenuOpen(false);
+                    setProfileDialogOpen(true);
+                  }}>
+                    <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" />
+                    <AvatarFallback>JD</AvatarFallback>
                   </Avatar>
                 </div>
               </DropdownMenuContent>
@@ -130,41 +239,258 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
           </div>
         ) : (
           <div className="flex items-center gap-6">
-            <ToggleGroup type="single" value={isEmergencyMode ? "emergency" : "clean"} onValueChange={(value) => {
-              if (value === "emergency" || value === "clean") {
-                setIsEmergencyMode(value === "emergency");
+            <ToggleGroup type="single" value={isEmergencyMode ? "dark" : "light"} onValueChange={(value) => {
+              if (value === "dark" || value === "light") {
+                setIsEmergencyMode(value === "dark");
               }
             }}>
-              <ToggleGroupItem value="clean" aria-label="Clean Mode" className="data-[state=on]:bg-water-light data-[state=on]:text-water-dark">
-                Clean Mode
+              <ToggleGroupItem value="light" aria-label="Light Mode" className="data-[state=on]:bg-water-light data-[state=on]:text-water-dark">
+                <Sun className="h-4 w-4 mr-2" />
+                Light Mode
               </ToggleGroupItem>
-              <ToggleGroupItem value="emergency" aria-label="Emergency Mode" className="data-[state=on]:bg-water-danger data-[state=on]:text-white">
-                Emergency Mode
+              <ToggleGroupItem value="dark" aria-label="Dark Mode" className="data-[state=on]:bg-water-danger data-[state=on]:text-white">
+                <Moon className="h-4 w-4 mr-2" />
+                Dark Mode
               </ToggleGroupItem>
             </ToggleGroup>
 
-            <div className="relative">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className={isEmergencyMode ? "text-water-danger" : "text-water-dark"} />
-                {notificationsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-water-danger text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {notificationsCount}
-                  </span>
-                )}
-              </Button>
-            </div>
+            <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative">
+                  <Bell className={isEmergencyMode ? "text-water-danger" : "text-water-dark"} />
+                  {notificationsCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-water-danger text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {notificationsCount}
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-80" align="end">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex justify-between items-center">
+                    <h2 className="font-semibold text-lg">Notifications</h2>
+                    <Button variant="ghost" size="sm" onClick={markAllAsRead} className="h-8 text-xs">
+                      Mark all as read
+                    </Button>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="max-h-[300px] overflow-y-auto">
+                  {notifications.length > 0 ? (
+                    notifications.map((notification) => (
+                      <div key={notification.id} className="px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
+                        <div className="flex items-start gap-2">
+                          <div className="mt-1">{getTypeIcon(notification.type)}</div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-start">
+                              <h4 className={`font-medium text-sm ${notification.read ? 'text-gray-600' : 'text-gray-900'}`}>
+                                {notification.title}
+                              </h4>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700"
+                                onClick={() => clearNotification(notification.id)}
+                              >
+                                <span className="sr-only">Dismiss</span>
+                                <ChevronDown className="h-3 w-3" />
+                              </Button>
+                            </div>
+                            <p className="text-xs text-gray-500 mb-1 truncate">{notification.description}</p>
+                            <div className="flex justify-between items-center">
+                              <span className="text-xs text-gray-400">{notification.time}</span>
+                              <Badge variant="outline" className={`text-xs ${getPriorityColor(notification.priority)}`}>
+                                {notification.priority}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                        <DropdownMenuSeparator className="my-1" />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="py-4 text-center text-gray-500">
+                      <p>No new notifications</p>
+                    </div>
+                  )}
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link to="/notifications" className="w-full text-center">
+                    View all notifications
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            <Button variant="ghost" size="icon">
-              <Settings className={isEmergencyMode ? "text-gray-400" : "text-gray-600"} />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Settings className={isEmergencyMode ? "text-gray-400" : "text-gray-600"} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Settings</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                      <Bell className="mr-2 h-4 w-4" />
+                      <span>Notifications</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuItem>
+                          <span>Email Alerts</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <span>Push Notifications</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>
+                          <span>Notification Settings</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>System Preferences</span>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <HelpCircle className="mr-2 h-4 w-4" />
+                  <span>Help & Documentation</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-water-danger">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            <Avatar>
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>WE</AvatarFallback>
+            <Avatar onClick={() => setProfileDialogOpen(true)} className="cursor-pointer hover:opacity-80 transition-opacity">
+              <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" />
+              <AvatarFallback>JD</AvatarFallback>
             </Avatar>
           </div>
         )}
       </div>
+      
+      {/* User Profile Dialog */}
+      <Dialog open={profileDialogOpen} onOpenChange={setProfileDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>User Profile</DialogTitle>
+            <DialogDescription>
+              Manage your account and preferences
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex flex-col items-center py-4">
+            <Avatar className="h-24 w-24 mb-4">
+              <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" />
+              <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
+            <h2 className="text-xl font-bold">John Doe</h2>
+            <p className="text-gray-500">Water Quality Specialist</p>
+            <p className="text-sm text-gray-500 mt-1">john.doe@hydra.com</p>
+          </div>
+          
+          <Tabs defaultValue="account" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="account">Account</TabsTrigger>
+              <TabsTrigger value="preferences">Preferences</TabsTrigger>
+              <TabsTrigger value="security">Security</TabsTrigger>
+            </TabsList>
+            <TabsContent value="account" className="mt-4">
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-sm font-medium">Name</h3>
+                  <p className="text-sm text-gray-500">John Doe</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Email</h3>
+                  <p className="text-sm text-gray-500">john.doe@hydra.com</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Role</h3>
+                  <p className="text-sm text-gray-500">Water Quality Specialist</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Department</h3>
+                  <p className="text-sm text-gray-500">Quality Assessment</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Member Since</h3>
+                  <p className="text-sm text-gray-500">March 2023</p>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="preferences" className="mt-4">
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-sm font-medium">Theme Preference</h3>
+                  <p className="text-sm text-gray-500">System Default (Auto)</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Notification Preferences</h3>
+                  <p className="text-sm text-gray-500">Email, Push, In-app</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Data Display</h3>
+                  <p className="text-sm text-gray-500">Metric Units</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">AI Assistant</h3>
+                  <p className="text-sm text-gray-500">Enabled with voice recognition</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Language</h3>
+                  <p className="text-sm text-gray-500">English (US)</p>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="security" className="mt-4">
+              <div className="space-y-3">
+                <div>
+                  <h3 className="text-sm font-medium">Password</h3>
+                  <p className="text-sm text-gray-500">Last changed 2 months ago</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Two-Factor Authentication</h3>
+                  <p className="text-sm text-gray-500">Enabled (Authenticator App)</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Login Sessions</h3>
+                  <p className="text-sm text-gray-500">2 active sessions</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">Access Level</h3>
+                  <p className="text-sm text-gray-500">Administrator</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium">API Keys</h3>
+                  <p className="text-sm text-gray-500">3 active keys</p>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
+          
+          <DialogFooter className="flex justify-between">
+            <Button variant="destructive" size="sm">Log Out</Button>
+            <DialogClose asChild>
+              <Button>Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
