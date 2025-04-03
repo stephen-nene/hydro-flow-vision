@@ -3,15 +3,132 @@ import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Home, Upload, Clock, FileBarChart, Brain, BarChart3, AlertTriangle } from "lucide-react";
+import { Home, Upload, Brain, BarChart3, AlertTriangle, FileCheck } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FileUploader } from "@/components/reports/FileUploader";
+import { CrisisPrediction } from "@/components/reports/CrisisPrediction";
+import { ComplianceReport } from "@/components/reports/ComplianceReport";
+
+interface WaterAutopsyVisualizationProps {
+  isEmergencyMode: boolean;
+  files: File[];
+}
+
+const WaterAutopsyVisualization = ({ isEmergencyMode, files }: WaterAutopsyVisualizationProps) => {
+  if (files.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className={isEmergencyMode ? 'text-gray-400' : 'text-gray-600'}>
+          Upload water test results to generate 3D visualization
+        </p>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="space-y-4">
+      <div className="aspect-video rounded-md bg-gray-900 flex items-center justify-center relative overflow-hidden">
+        {/* Simulated 3D Visualization */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-40 h-40 rounded-full bg-blue-500/20 animate-pulse flex items-center justify-center">
+            <div className="w-32 h-32 rounded-full bg-blue-500/30 animate-pulse flex items-center justify-center">
+              <div className="w-24 h-24 rounded-full bg-blue-500/40 animate-pulse flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-blue-500/50 animate-pulse">
+                  {/* Red particles */}
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <div 
+                      key={i}
+                      className="absolute w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"
+                      style={{
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 100}%`,
+                        animationDelay: `${Math.random() * 2}s`,
+                        animationDuration: `${Math.random() * 3 + 2}s`
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="relative z-10 text-white text-center">
+          <h3 className="text-lg font-bold mb-1">3D Water Sample Visualization</h3>
+          <p className="text-sm text-gray-300">
+            Analyzing {files.length} file{files.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-1">
+              <div className="h-2 w-2 rounded-full bg-red-500"></div>
+              Contaminant Hotspots
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              Lead particles detected at 0.24ppm concentration (4.8x legal limit)
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-1">
+              <div className="h-2 w-2 rounded-full bg-green-500"></div>
+              Treatment Simulation
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              Ion Exchange Filter (HYD-F103) reduces lead to 0.01ppm
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-1">
+              <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+              Time-Lapse Healing
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              Water quality will improve 92% within 1 year with proper treatment
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={() => window.location.reload()}>
+          Reset Analysis
+        </Button>
+        
+        <Button>
+          Download Visualization
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 const Reports = () => {
   const [isEmergencyMode, setIsEmergencyMode] = useState(false);
   const isMobile = useIsMobile();
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
+  const handleFilesUploaded = (files: File[]) => {
+    setUploadedFiles(files);
+  };
 
   return (
     <div className={`min-h-screen ${isEmergencyMode ? 'emergency-mode' : ''}`}>
@@ -45,9 +162,18 @@ const Reports = () => {
 
           <Tabs defaultValue="autopsy" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="autopsy">Water Autopsy</TabsTrigger>
-              <TabsTrigger value="prediction">Crisis Prediction</TabsTrigger>
-              <TabsTrigger value="compliance">Compliance</TabsTrigger>
+              <TabsTrigger value="autopsy" className="flex items-center gap-1">
+                <Brain className="h-4 w-4" />
+                <span>Water Autopsy</span>
+              </TabsTrigger>
+              <TabsTrigger value="prediction" className="flex items-center gap-1">
+                <BarChart3 className="h-4 w-4" />
+                <span>Crisis Prediction</span>
+              </TabsTrigger>
+              <TabsTrigger value="compliance" className="flex items-center gap-1">
+                <FileCheck className="h-4 w-4" />
+                <span>Compliance</span>
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="autopsy">
@@ -63,65 +189,17 @@ const Reports = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-6">
-                    <div className={`border-2 border-dashed rounded-lg p-8 text-center ${isEmergencyMode ? 'border-gray-700 bg-black/30' : 'border-gray-200 bg-gray-50'}`}>
-                      <Upload className="h-10 w-10 mx-auto mb-4 text-gray-400" />
-                      <h3 className="text-lg font-medium mb-1">Upload Lab Results</h3>
-                      <p className={`text-sm ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Drag and drop your water test results or click to browse
-                      </p>
-                      <Button className="mt-4">Select Files</Button>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium flex items-center gap-1">
-                            <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                            Contaminant Hotspots
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Visualize contaminants with color-coded particles
-                          </p>
-                        </CardContent>
-                      </Card>
-                      
-                      <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium flex items-center gap-1">
-                            <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                            Treatment Simulation
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Slide to see filters clean the water sample
-                          </p>
-                        </CardContent>
-                      </Card>
-                      
-                      <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
-                        <CardHeader className="pb-2">
-                          <CardTitle className="text-sm font-medium flex items-center gap-1">
-                            <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-                            Time-Lapse Healing
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            See water quality improvement over 1/5/10 years
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </div>
+                    {uploadedFiles.length === 0 ? (
+                      <FileUploader isEmergencyMode={isEmergencyMode} onFilesUploaded={handleFilesUploaded} />
+                    ) : (
+                      <WaterAutopsyVisualization isEmergencyMode={isEmergencyMode} files={uploadedFiles} />
+                    )}
                   </div>
                 </CardContent>
                 <CardFooter className="justify-between">
                   <p className={`text-sm italic ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     "Show clients the poison in their water—and exactly how we'll fix it"
                   </p>
-                  <Button disabled>Generate Report</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -138,38 +216,12 @@ const Reports = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="aspect-video rounded-md bg-gray-900 flex items-center justify-center mb-4">
-                    <p className="text-white text-center">AI Forecasting Dashboard Map</p>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Historical Data Analysis</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          Combines lab data, weather patterns, and infrastructure maps
-                        </p>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium">Alerting System</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                          SMS/Email alerts to sales teams for proactive outreach
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
+                  <CrisisPrediction isEmergencyMode={isEmergencyMode} />
                 </CardContent>
                 <CardFooter className="justify-between">
                   <p className={`text-sm italic ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     "Turn your team from water fixers to fortune tellers"
                   </p>
-                  <Button>View Predictions</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -186,17 +238,7 @@ const Reports = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className={`p-4 rounded-md mb-4 ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-                    <h3 className="text-lg font-medium mb-2">Ask in plain English:</h3>
-                    <div className={`p-3 rounded-md mb-3 ${isEmergencyMode ? 'bg-black/60 border border-gray-800' : 'bg-white border border-gray-200'}`}>
-                      "Is this lead level illegal in Kenya?"
-                    </div>
-                    <h3 className="text-lg font-medium mb-2">AI Responds:</h3>
-                    <div className={`p-3 rounded-md ${isEmergencyMode ? 'bg-black/60 border border-gray-800' : 'bg-white border border-gray-200'}`}>
-                      "0.3ppm exceeds EPA limits. Recommend: Ion Exchange Filter (D&S SKU #FX-203)."
-                    </div>
-                  </div>
-                  <Button className="w-full">Generate Compliance Report</Button>
+                  <ComplianceReport isEmergencyMode={isEmergencyMode} />
                 </CardContent>
                 <CardFooter>
                   <p className={`text-sm italic ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>

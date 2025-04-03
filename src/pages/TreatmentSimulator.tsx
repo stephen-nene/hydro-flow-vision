@@ -9,10 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { TreatmentSimulator as TreatmentSimulatorComponent } from "@/components/simulator/TreatmentSimulator";
 
 const TreatmentSimulator = () => {
   const [isEmergencyMode, setIsEmergencyMode] = useState(false);
   const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState<"filtration" | "chemical" | "biological">("filtration");
 
   return (
     <div className={`min-h-screen ${isEmergencyMode ? 'emergency-mode' : ''}`}>
@@ -114,7 +116,7 @@ const TreatmentSimulator = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue="filtration">
+                <Tabs defaultValue="filtration" value={activeTab} onValueChange={(value) => setActiveTab(value as "filtration" | "chemical" | "biological")}>
                   <TabsList className="w-full grid grid-cols-3">
                     <TabsTrigger value="filtration">Filtration</TabsTrigger>
                     <TabsTrigger value="chemical">Chemical</TabsTrigger>
@@ -122,44 +124,22 @@ const TreatmentSimulator = () => {
                   </TabsList>
                   
                   <TabsContent value="filtration" className="mt-4">
-                    <div className="aspect-video bg-gray-900 rounded-md flex items-center justify-center mb-4">
-                      <p className="text-white">Filtration Simulation View</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className={`p-2 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs">Removal Efficiency</span>
-                          <span className="text-xs font-medium">92%</span>
-                        </div>
-                        <Progress value={92} className={`h-1.5 ${isEmergencyMode ? 'bg-gray-800' : 'bg-gray-200'}`} />
-                      </div>
-                      
-                      <div className={`p-2 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-xs">Maintenance Interval</span>
-                          <span className="text-xs font-medium">6 Months</span>
-                        </div>
-                        <Progress value={50} className={`h-1.5 ${isEmergencyMode ? 'bg-gray-800' : 'bg-gray-200'}`} />
-                      </div>
-                    </div>
+                    <TreatmentSimulatorComponent treatmentType="filtration" isEmergencyMode={isEmergencyMode} />
                   </TabsContent>
                   
                   <TabsContent value="chemical" className="mt-4">
-                    <div className="aspect-video bg-gray-900 rounded-md flex items-center justify-center mb-4">
-                      <p className="text-white">Chemical Treatment Simulation</p>
-                    </div>
+                    <TreatmentSimulatorComponent treatmentType="chemical" isEmergencyMode={isEmergencyMode} />
                   </TabsContent>
                   
                   <TabsContent value="biological" className="mt-4">
-                    <div className="aspect-video bg-gray-900 rounded-md flex items-center justify-center mb-4">
-                      <p className="text-white">Biological Treatment Simulation</p>
-                    </div>
+                    <TreatmentSimulatorComponent treatmentType="biological" isEmergencyMode={isEmergencyMode} />
                   </TabsContent>
                 </Tabs>
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Run New Simulation</Button>
+                <Button className="w-full" onClick={() => setActiveTab(activeTab)}>
+                  Run New Simulation
+                </Button>
               </CardFooter>
             </Card>
           </div>

@@ -27,11 +27,11 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
     <div className={`sticky top-0 z-50 w-full border-b ${isEmergencyMode ? 'bg-black/90 border-water-danger/30' : 'bg-white/90 border-water-light'} backdrop-blur-sm`}>
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="flex items-center justify-center overflow-hidden rounded-full h-8 w-8 bg-water-light">
-            <span className="font-semibold text-water-dark">H</span>
+          <div className="flex items-center justify-center overflow-hidden rounded-full h-8 w-8 bg-water-dark">
+            <span className="font-semibold text-white">H</span>
           </div>
           <span className={`font-semibold text-xl ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
-            Hydro-Flow-Vision
+            Hydra Vision
           </span>
         </div>
 

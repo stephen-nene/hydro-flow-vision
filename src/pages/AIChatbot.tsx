@@ -9,17 +9,169 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { WaterChatbot } from "@/components/chatbot/WaterChatbot";
+import { useToast } from "@/components/ui/use-toast";
+
+interface QuickReference {
+  title: string;
+  description: string;
+  content: string;
+}
 
 const AIChatbot = () => {
   const [isEmergencyMode, setIsEmergencyMode] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
+  const [activeReference, setActiveReference] = useState<QuickReference | null>(null);
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    // In a real implementation, this would send the message to an AI service
-    console.log("Sending message:", inputMessage);
-    setInputMessage("");
+  const quickReferences: QuickReference[] = [
+    {
+      title: "WHO Drinking Standards",
+      description: "Global guidelines for drinking water quality",
+      content: `# WHO Drinking Water Standards (2023)
+
+## Priority Contaminants and Guidelines
+
+| Contaminant | WHO Guideline | Health Impact |
+|-------------|---------------|---------------|
+| Lead (Pb) | 0.01 mg/L | Neurotoxic, affects brain development |
+| Arsenic (As) | 0.01 mg/L | Carcinogenic, skin lesions |
+| Fluoride (F) | 1.5 mg/L | Dental/skeletal fluorosis at high levels |
+| Nitrate (NO₃) | 50 mg/L | Methemoglobinemia in infants |
+| E. coli | Not detectable in 100mL | Indicator of fecal contamination |
+| Turbidity | <1 NTU, ideally <0.2 NTU | Interferes with disinfection |
+| Chlorine residual | 0.2-0.5 mg/L | Ensures disinfection in distribution |
+
+## Implementation
+- Regular monitoring according to risk assessment
+- Source protection as first barrier
+- Multiple treatment barriers
+- Safe distribution systems
+- Comprehensive water safety plans
+
+## Regional Adaptations
+WHO guidelines are adapted by each country based on local conditions, technological capabilities, and economic considerations.`
+    },
+    {
+      title: "Local Regulations",
+      description: "Country-specific water quality laws",
+      content: `# Kenya Water Quality Regulations (2022)
+
+## Kenya Environmental Management and Coordination (Water Quality) Regulations
+
+| Parameter | Drinking Water Limit | Effluent Discharge Limit |
+|-----------|----------------------|--------------------------|
+| Lead | 0.05 mg/L | 0.1 mg/L |
+| Arsenic | 0.01 mg/L | 0.02 mg/L |
+| pH | 6.5-8.5 | 6.0-9.0 |
+| E. coli | Not detectable in 100mL | - |
+| Total suspended solids | < 30 mg/L | 30 mg/L |
+| Fluoride | 1.5 mg/L | 2 mg/L |
+
+## Regulatory Authority
+Water Services Regulatory Board (WASREB) and National Environment Management Authority (NEMA)
+
+## Compliance Requirements
+- Quarterly monitoring and reporting
+- Annual license renewal
+- Mandatory treatment for surface water
+- Consumer alerts for violations
+- Penalties up to KES 1 million for non-compliance
+
+## Recent Updates
+New microplastic monitoring requirements added in 2022 amendment`
+    },
+    {
+      title: "Treatment Solutions",
+      description: "Recommended products for compliance",
+      content: `# Hydra Treatment Solutions
+
+## Lead Removal
+- **HYD-F103 Ion Exchange Filter**
+  - 99.8% lead removal efficiency
+  - Capacity: 100,000 liters
+  - Replacement: Every 12 months
+  - Cost: $1,200-$1,800
+
+## Biological Contamination
+- **HYD-UV100 Ultraviolet System**
+  - 99.9999% pathogen inactivation
+  - Flow rate: 12-40 LPM
+  - Lamp replacement: 12 months
+  - Cost: $800-$1,500
+
+## Arsenic Removal
+- **HYD-A200 Adsorption Media**
+  - 98% arsenic removal
+  - Capacity: 80,000 liters
+  - Replacement: Every 8-12 months
+  - Cost: $1,500-$2,200
+
+## Complete Treatment System
+- **HYD-PRO Municipal Water Package**
+  - Multi-stage filtration + UV + monitoring
+  - Handles all major contaminants
+  - Remote monitoring capability
+  - Cost: $3,800-$6,500
+
+## Industrial Solutions
+- **HYD-IND Series**
+  - Custom treatment trains
+  - Flow rates: 50-5000 LPM
+  - Remote monitoring + automated maintenance
+  - PLC controls + HMI interface
+  - Cost: Based on specifications`
+    }
+  ];
+  
+  const handleComplianceReport = () => {
+    toast({
+      title: "Generating compliance report",
+      description: "Analyzing water quality data against regulatory standards"
+    });
+    
+    setTimeout(() => {
+      toast({
+        title: "Compliance report ready",
+        description: "3 parameters exceed regulatory limits"
+      });
+      
+      window.location.href = "/reports?tab=compliance";
+    }, 2000);
+  };
+  
+  const handleRiskAssessment = () => {
+    toast({
+      title: "Conducting risk assessment",
+      description: "Analyzing historical data and contamination patterns"
+    });
+    
+    setTimeout(() => {
+      toast({
+        title: "Risk assessment complete",
+        description: "Medium risk level identified for lead contamination",
+        variant: "destructive"
+      });
+    }, 2500);
+  };
+  
+  const handleRegulatoryCrossCheck = () => {
+    toast({
+      title: "Running regulatory cross-check",
+      description: "Comparing sample against 27 regulatory frameworks"
+    });
+    
+    setTimeout(() => {
+      toast({
+        title: "Cross-check complete",
+        description: "Sample complies with 23/27 regulatory frameworks",
+      });
+    }, 2000);
+  };
+  
+  const handleViewReference = (reference: QuickReference) => {
+    setActiveReference(reference);
   };
 
   return (
@@ -38,14 +190,14 @@ const AIChatbot = () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/ai-chatbot">HydroLex AI Assistant</BreadcrumbLink>
+                <BreadcrumbLink href="/ai-chatbot">HydraLex AI Assistant</BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
           
           <header className="mb-6">
             <h1 className={`text-2xl md:text-3xl font-bold ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
-              HydroLex AI Legal Assistant
+              HydraLex AI Legal Assistant
             </h1>
             <p className={`text-base md:text-lg ${isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}`}>
               AI-powered water regulations compliance assistant
@@ -53,63 +205,79 @@ const AIChatbot = () => {
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'} h-[calc(100vh-14rem)]`}>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Book className="h-5 w-5 text-purple-500" />
-                    Regulatory Assistant Chat
-                  </CardTitle>
-                  <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
-                    Ask in plain English about water regulations and compliance
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1 overflow-auto">
-                  <div className="space-y-4">
-                    <div className="flex gap-3">
-                      <Avatar>
-                        <AvatarFallback>AI</AvatarFallback>
-                      </Avatar>
-                      <div className={`p-3 rounded-lg ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-100'} max-w-[80%]`}>
-                        <p className="text-sm">Welcome to HydroLex! How can I assist you with water regulations today?</p>
+            {activeReference ? (
+              // Display reference details when selected
+              <div className="lg:col-span-2">
+                <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'} h-[calc(100vh-14rem)]`}>
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="flex items-center gap-2">
+                          <Book className="h-5 w-5 text-purple-500" />
+                          {activeReference.title}
+                        </CardTitle>
+                        <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                          {activeReference.description}
+                        </CardDescription>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => setActiveReference(null)}>
+                        Back to Chat
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="overflow-auto pb-6">
+                    <div className={`prose max-w-none ${isEmergencyMode ? 'prose-invert' : ''}`}>
+                      <div className="markdown-content">
+                        {activeReference.content.split('\n').map((line, i) => {
+                          if (line.startsWith('# ')) {
+                            return <h1 key={i} className="text-xl font-bold mt-2 mb-4">{line.substring(2)}</h1>;
+                          } else if (line.startsWith('## ')) {
+                            return <h2 key={i} className="text-lg font-semibold mt-4 mb-2">{line.substring(3)}</h2>;
+                          } else if (line.startsWith('- ')) {
+                            return <li key={i} className="ml-4 my-1">{line.substring(2)}</li>;
+                          } else if (line.startsWith('| ')) {
+                            // This is a table row
+                            const cells = line.split('|').filter(cell => cell.trim() !== '');
+                            return (
+                              <div key={i} className="flex border-b dark:border-gray-700">
+                                {cells.map((cell, cellIndex) => (
+                                  <div 
+                                    key={cellIndex} 
+                                    className={`p-2 flex-1 ${i === 0 || line.includes('---') ? 'font-bold' : ''}`}
+                                  >
+                                    {cell.trim()}
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          } else if (line.trim() === '') {
+                            return <div key={i} className="h-4"></div>;
+                          } else {
+                            return <p key={i} className="my-2">{line}</p>;
+                          }
+                        })}
                       </div>
                     </div>
-                    
-                    <div className="flex gap-3 justify-end">
-                      <div className={`p-3 rounded-lg bg-blue-600 text-white max-w-[80%]`}>
-                        <p className="text-sm">Is 0.3ppm lead level illegal in Kenya?</p>
-                      </div>
-                      <Avatar>
-                        <AvatarImage src="https://github.com/shadcn.png" />
-                        <AvatarFallback>ME</AvatarFallback>
-                      </Avatar>
-                    </div>
-                    
-                    <div className="flex gap-3">
-                      <Avatar>
-                        <AvatarFallback>AI</AvatarFallback>
-                      </Avatar>
-                      <div className={`p-3 rounded-lg ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-100'} max-w-[80%]`}>
-                        <p className="text-sm">Yes, 0.3ppm lead exceeds Kenya's Environmental Management and Coordination (Water Quality) Regulations limit of 0.05ppm for drinking water. I recommend the Ion Exchange Filter (D&S SKU #FX-203) for remediation. Would you like me to generate a compliance report?</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <form onSubmit={handleSendMessage} className="flex w-full gap-2">
-                    <Input
-                      placeholder="Ask about water regulations..."
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      className={isEmergencyMode ? 'bg-gray-900 border-gray-800' : ''}
-                    />
-                    <Button type="submit" size="icon">
-                      <Send className="h-4 w-4" />
-                    </Button>
-                  </form>
-                </CardFooter>
-              </Card>
-            </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ) : (
+              // Display chat when no reference is selected
+              <div className="lg:col-span-2">
+                <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'} h-[calc(100vh-14rem)]`}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Book className="h-5 w-5 text-purple-500" />
+                      Regulatory Assistant Chat
+                    </CardTitle>
+                    <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                      Ask in plain English about water regulations and compliance
+                    </CardDescription>
+                  </CardHeader>
+                  <WaterChatbot isEmergencyMode={isEmergencyMode} />
+                </Card>
+              </div>
+            )}
             
             <div className="space-y-6">
               <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
@@ -120,17 +288,28 @@ const AIChatbot = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button className="w-full flex items-center justify-start gap-2">
+                  <Button 
+                    className="w-full flex items-center justify-start gap-2"
+                    onClick={handleComplianceReport}
+                  >
                     <FileCheck className="h-4 w-4" />
                     Generate Compliance Report
                   </Button>
                   
-                  <Button variant="outline" className="w-full flex items-center justify-start gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="w-full flex items-center justify-start gap-2"
+                    onClick={handleRiskAssessment}
+                  >
                     <AlertTriangle className="h-4 w-4" />
                     Risk Assessment
                   </Button>
                   
-                  <Button variant="outline" className="w-full flex items-center justify-start gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="w-full flex items-center justify-start gap-2"
+                    onClick={handleRegulatoryCrossCheck}
+                  >
                     <Scale className="h-4 w-4" />
                     Regulatory Cross-Check
                   </Button>
@@ -143,20 +322,16 @@ const AIChatbot = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className={`p-3 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'} border ${isEmergencyMode ? 'border-gray-800' : 'border-gray-200'}`}>
-                      <p className="text-sm font-medium">WHO Drinking Standards</p>
-                      <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>Global guidelines for drinking water quality</p>
-                    </div>
-                    
-                    <div className={`p-3 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'} border ${isEmergencyMode ? 'border-gray-800' : 'border-gray-200'}`}>
-                      <p className="text-sm font-medium">Local Regulations</p>
-                      <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>Country-specific water quality laws</p>
-                    </div>
-                    
-                    <div className={`p-3 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'} border ${isEmergencyMode ? 'border-gray-800' : 'border-gray-200'}`}>
-                      <p className="text-sm font-medium">Treatment Solutions</p>
-                      <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>Recommended products for compliance</p>
-                    </div>
+                    {quickReferences.map((reference, index) => (
+                      <div 
+                        key={index}
+                        className={`p-3 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'} border ${isEmergencyMode ? 'border-gray-800' : 'border-gray-200'} cursor-pointer hover:bg-opacity-80`}
+                        onClick={() => handleViewReference(reference)}
+                      >
+                        <p className="text-sm font-medium">{reference.title}</p>
+                        <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>{reference.description}</p>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
                 <CardFooter>

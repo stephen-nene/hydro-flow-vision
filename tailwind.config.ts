@@ -63,11 +63,11 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        // Water-themed colors
+        // Water-themed colors - updated to darker blue
         water: {
-          light: "#D3E4FD",
-          DEFAULT: "#33C3F0",
-          dark: "#1EAEDB",
+          light: "#C3D4ED",
+          DEFAULT: "#1A73E8",
+          dark: "#0D47A1",
           danger: "#ea384c",
         },
       },
