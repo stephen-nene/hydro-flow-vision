@@ -10,7 +10,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
 
 const featuresList = [
   {
@@ -123,11 +122,10 @@ const Index = () => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {featuresList.map((feature, index) => (
-                    <motion.div
+                    <div
                       key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1, duration: 0.3 }}
+                      className="animate-fade-in"
+                      style={{ animationDelay: `${index * 100}ms` }}
                     >
                       <Card className={`h-full overflow-hidden border transition-all duration-300 hover:shadow-md ${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white border-water-light/80'}`}>
                         <CardHeader className="flex flex-row items-center gap-3">
@@ -154,7 +152,7 @@ const Index = () => {
                           </Button>
                         </CardFooter>
                       </Card>
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </section>
