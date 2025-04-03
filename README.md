@@ -5,7 +5,7 @@ Hydra is a comprehensive web-based platform for water quality management, monito
 
 ![Hydra Platform](https://github.com/your-repo/hydra/raw/main/screenshots/dashboard.png)
 
-## Features
+## Core Features & Components
 
 ### 🔍 AI-Powered Analytics
 - **Water Autopsy:** Interactive 3D visualization of water sample analysis with molecular-level insights
@@ -32,207 +32,331 @@ Hydra is a comprehensive web-based platform for water quality management, monito
 - Prominent alerts and streamlined workflows for rapid response
 - Automated emergency response protocols and team notifications
 
-## Tech Stack
+## Technical Documentation
 
-### Frontend
-- **React:** Component-based UI with TypeScript for type safety
-- **TypeScript:** Static typing for enhanced code quality and developer experience
+### Frontend Architecture
+
+#### React Component Structure
+```
+src/
+├── components/
+│   ├── dashboard/           # Dashboard components
+│   │   ├── LiveAlerts.tsx   # Real-time water quality alerts
+│   │   ├── PriorityCases.tsx # High-priority water issues
+│   │   ├── ToxicityGauge.tsx # Water toxicity visualization
+│   │   └── WaterQualityMetrics.tsx # Water metrics charts
+│   ├── ar/                  # Augmented reality components
+│   │   ├── CameraView.tsx   # AR camera functionality
+│   │   └── AROverlay.tsx    # AR data overlay
+│   ├── chatbot/             # AI assistant components
+│   │   └── WaterChatbot.tsx # Natural language water assistant
+│   ├── simulator/           # Treatment simulation components
+│   │   └── TreatmentSimulator.tsx # Water treatment simulator
+│   ├── reports/             # Reporting components
+│   │   ├── ComplianceReport.tsx # Regulatory compliance reports
+│   │   └── CrisisPrediction.tsx # Predictive analysis
+│   └── layout/              # App layout components
+│       ├── Navbar.tsx       # Application navigation
+│       └── Sidebar.tsx      # Sidebar navigation and tools
+├── pages/                   # Application pages
+├── hooks/                   # Custom React hooks
+├── data/                    # Data models and mock data
+└── types/                   # TypeScript type definitions
+```
+
+#### State Management
+- **Context API:** User preferences, theme settings, and global configurations
+- **React Query:** Data fetching, caching, and real-time updates
+- **Zustand/Redux:** Optional state management for complex state requirements
+- **Local Storage:** Persistent user settings and authentication tokens
+
+#### UI/UX Framework
 - **Tailwind CSS:** Utility-first styling for responsive design
 - **Shadcn UI:** Component library for consistent design language
-- **Recharts:** Responsive chart visualizations with real-time data binding
-- **Lucide Icons:** SVG icon system for scalable, accessible UI elements
-- **React Router:** Client-side routing with role-based access control
-- **React Query:** Data fetching, caching, and state management
+- **Framer Motion:** Smooth animations and transitions for data visualization
+- **Recharts:** Dynamic and responsive chart components for water quality metrics
+- **Lucide Icons:** SVG icon system for consistent visual language
 
-### Backend Architecture
-- **Node.js:** Server-side JavaScript runtime for API services
-- **Express:** Fast, unopinionated web framework for RESTful API endpoints
-- **PostgreSQL:** Relational database for structured water quality data
-- **TimescaleDB:** Time-series database extension for high-performance metrics storage
-- **Redis:** In-memory data structure store for caching and real-time operations
-- **WebSockets:** Real-time communication for live monitoring updates
-- **GraphQL:** Flexible data querying for complex analytics requests
+### Backend Integration Points
 
-### AI & Machine Learning
-- **TensorFlow/PyTorch:** Deep learning frameworks for water quality prediction models
-- **Computer Vision:** Contaminant detection in water samples with 95% accuracy
-- **Natural Language Processing:** Regulatory compliance assistant with domain-specific training
-- **Time Series Analysis:** Anomaly detection and forecasting for water quality metrics
-- **Reinforcement Learning:** Optimization of treatment protocols based on outcomes
-- **MLOps Pipeline:** Automated model training, validation, and deployment
-- **Transfer Learning:** Pre-trained models adapted for water-specific applications
+#### RESTful API Endpoints
+The frontend expects the following API endpoints:
 
-### Data Management
-- **Real-time Monitoring:** Live water quality metrics with alerting thresholds
-- **Historical Analysis:** Trend identification and prediction with statistical modeling
-- **Client Prioritization:** Risk-based scoring system with automated escalation
-- **Data Warehouse:** Consolidated repository for analytics and reporting
-- **ETL Pipelines:** Automated data extraction, transformation, and loading
-- **Data Governance:** Compliance with data protection regulations and audit trails
+```
+/api/v1/auth                # Authentication endpoints
+/api/v1/water-samples       # Water sample data endpoints
+/api/v1/analytics           # Analysis and metrics endpoints
+/api/v1/alerts              # Alert management endpoints
+/api/v1/reports             # Report generation endpoints
+/api/v1/treatments          # Treatment simulation endpoints
+/api/v1/compliance          # Regulatory compliance endpoints
+/api/v1/ar-data             # AR data endpoints
+```
 
-### DevOps & Infrastructure
-- **Docker:** Containerization for consistent development and deployment
-- **Kubernetes:** Container orchestration for scaling and resilience
-- **CI/CD:** Automated testing and deployment pipelines
-- **Monitoring:** Application performance and infrastructure health tracking
-- **Logging:** Centralized log management with search and alerting
-- **Backup & Recovery:** Automated backup systems with point-in-time recovery
+#### WebSocket Integration
+Real-time data is consumed through WebSocket connections:
 
-## API Integration
+```javascript
+// Example WebSocket implementation
+const socket = new WebSocket('wss://api.hydra-water.com/ws');
 
-Hydra offers extensive integration capabilities for connecting with existing water management systems, IoT devices, and enterprise software:
+socket.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  
+  switch (data.type) {
+    case 'alert':
+      // Handle new water quality alert
+      break;
+    case 'sample':
+      // Handle new water sample data
+      break;
+    case 'metrics':
+      // Handle updated metrics
+      break;
+    default:
+      console.log('Unknown message type', data);
+  }
+};
+```
 
-### API Specifications
+#### Authentication Flow
+The application uses OAuth 2.0 with JWT for authentication:
 
-#### RESTful Endpoints
-- **Water Samples:** `/api/v1/samples` - CRUD operations for water samples
-- **Analytics:** `/api/v1/analytics` - Access to analysis results and predictions
-- **Monitoring:** `/api/v1/monitoring` - Real-time water quality metrics
-- **Compliance:** `/api/v1/compliance` - Regulatory compliance data and reports
-- **Treatments:** `/api/v1/treatments` - Treatment protocols and effectiveness data
+1. User login through `/api/v1/auth/login`
+2. JWT token received and stored in secure HTTP-only cookie
+3. Token refresh through `/api/v1/auth/refresh`
+4. Token validation for protected routes
+5. Role-based access control for different user types
 
-#### GraphQL Interface
-For more complex data requirements, the GraphQL endpoint at `/api/graphql` provides flexible querying capabilities with robust schema validation.
+### AI/ML Integration Requirements
 
-### Authentication & Security
-- **OAuth 2.0:** Secure API access with role-based permissions
-- **JWT:** Stateless authentication for microservices architecture
-- **API Keys:** Integration with third-party services and IoT devices
-- **Rate Limiting:** Protection against abuse and DoS attacks
-- **Audit Logging:** Comprehensive tracking of all API interactions
+#### Data Models & Training
 
-### ERP Integration
-Hydra seamlessly connects with Enterprise Resource Planning systems to provide:
+The frontend interfaces with several AI/ML models that should be developed by the ML team:
 
-- **Bi-directional Data Flow:** Synchronize water quality data with enterprise systems
-- **Asset Management:** Track treatment equipment maintenance and lifecycle
-- **Inventory Control:** Monitor chemical usage and supply chain integration
-- **Work Order Generation:** Automated task creation based on water quality alerts
-- **Financial Reporting:** Cost tracking and budget allocation for water treatment
-- **Compliance Documentation:** Automated regulatory filing and record-keeping
+1. **Water Quality Prediction Model**
+   - **Input:** Historical water sample data, environmental factors, treatment parameters
+   - **Output:** Predicted water quality metrics, toxicity levels, and contaminant probabilities
+   - **Recommended Architecture:** LSTM or Transformer-based sequence prediction
+   - **Expected Accuracy:** ≥ 85% for 7-day predictions
+   - **API Endpoint:** `/api/v1/analytics/predict`
+
+2. **Contaminant Classification Model**
+   - **Input:** Water sample chemical composition data
+   - **Output:** Contaminant type, source probability, and severity classification
+   - **Recommended Architecture:** Gradient-boosted decision trees or random forest
+   - **Expected Accuracy:** ≥ 90% for known contaminants
+   - **API Endpoint:** `/api/v1/analytics/classify`
+
+3. **Computer Vision for AR**
+   - **Input:** Camera feed from mobile device
+   - **Output:** Water source identification, visual anomaly detection
+   - **Recommended Architecture:** CNN or EfficientNet with transfer learning
+   - **Expected Performance:** Real-time (≤ 100ms latency) on mobile devices
+   - **API Endpoint:** `/api/v1/ar-data/analyze`
+
+4. **Natural Language Processing for Chatbot**
+   - **Input:** User text or voice queries about water regulations and treatment
+   - **Output:** Contextual answers, regulatory guidance, treatment recommendations
+   - **Recommended Architecture:** Fine-tuned BERT/GPT model with water domain knowledge
+   - **Expected Performance:** ≤ 1s response time, ≥ 85% accuracy on domain-specific queries
+   - **API Endpoint:** `/api/v1/chatbot/query`
+
+#### Model Training Requirements
+
+For optimal integration with the frontend, the ML team should consider:
+
+1. **Real-time Inference:**
+   - Models should be optimized for quick inference (≤ 500ms for most cases)
+   - Consider model quantization and edge deployment for AR features
+
+2. **Incremental Learning:**
+   - Models should support continuous learning from new data
+   - Implement feedback loops from user corrections/validations
+
+3. **Explainability:**
+   - Provide feature importance and confidence scores with predictions
+   - Support for SHAP values or other explainability methods for regulatory compliance
+
+4. **Model Versioning:**
+   - Clear version control for models to ensure reproducibility
+   - A/B testing support for model improvements
+
+5. **Data Schema:**
+   - Consistent data schema between training and inference
+   - Well-documented input/output formats for frontend integration
+
+### ERP System Integration
+
+The frontend is designed to integrate with enterprise resource planning systems through:
+
+#### Data Exchange Format
+```json
+{
+  "waterSample": {
+    "id": "12345",
+    "location": "Main Reservoir",
+    "timestamp": "2023-10-15T14:30:00Z",
+    "metrics": {
+      "ph": 7.2,
+      "turbidity": 0.4,
+      "tds": 145,
+      "conductivity": 210,
+      "temperature": 18.5
+    },
+    "contaminants": [
+      {
+        "name": "Nitrates",
+        "value": 5.2,
+        "unit": "mg/L",
+        "threshold": 10.0
+      }
+    ],
+    "toxicityLevel": 35,
+    "treatmentRecommendations": [
+      {
+        "method": "Filtration",
+        "parameters": {
+          "filterType": "Carbon",
+          "flowRate": 12.5,
+          "contactTime": 4.2
+        }
+      }
+    ]
+  }
+}
+```
+
+#### Integration Endpoints
+1. **Asset Management:**
+   - Equipment inventory and maintenance scheduling
+   - `/api/v1/integration/assets`
+
+2. **Inventory Control:**
+   - Treatment chemicals and supply management
+   - `/api/v1/integration/inventory`
+
+3. **Work Order Generation:**
+   - Automated task creation based on water quality alerts
+   - `/api/v1/integration/work-orders`
+
+4. **Financial Reporting:**
+   - Cost tracking and treatment expense allocation
+   - `/api/v1/integration/financial`
+
+5. **Compliance Documentation:**
+   - Automated regulatory filing and record-keeping
+   - `/api/v1/integration/compliance-docs`
 
 ### IoT Device Integration
-Connect with water quality sensors and treatment equipment:
 
-- **Sensor Networks:** Direct integration with pH, turbidity, temperature sensors
-- **SCADA Systems:** Interface with supervisory control and data acquisition systems
-- **Smart Meters:** Consumption and flow monitoring with anomaly detection
-- **Automated Samplers:** Scheduling and results processing for sampling devices
-- **Treatment Controls:** Remote management of treatment processes and equipment
+The platform is designed to receive data from various IoT sensors and devices:
 
-## Deployment
+#### Supported Protocols
+- **MQTT:** For lightweight sensor data transmission
+- **OPC UA:** For industrial control systems integration
+- **HTTP/REST:** For batch data uploads and configuration
+- **CoAP:** For resource-constrained devices
 
-### Scalability
-Hydra is built for enterprise-scale deployment with:
+#### Device Onboarding Flow
+1. Device registration via `/api/v1/devices/register`
+2. Authentication key generation
+3. Configuration push to device
+4. Data validation and calibration
+5. Production data flow initiation
 
-- **Horizontal Scaling:** Add resources to handle increasing loads
-- **Microservices Architecture:** Independent scaling of system components
-- **Load Balancing:** Distribute traffic for high availability
-- **Regional Deployment:** Multi-region options for global operations
-- **Edge Computing:** Local processing for remote monitoring stations
+#### Expected Data Format
+```json
+{
+  "deviceId": "sensor-001",
+  "deviceType": "ph-sensor",
+  "timestamp": "2023-10-15T14:30:00Z",
+  "location": {
+    "latitude": 40.7128,
+    "longitude": -74.0060,
+    "description": "Treatment Plant Intake"
+  },
+  "measurements": [
+    {
+      "parameter": "ph",
+      "value": 7.2,
+      "unit": "pH",
+      "accuracy": 0.1
+    }
+  ],
+  "batteryLevel": 85,
+  "signalStrength": -67
+}
+```
 
-### Cloud Providers
-Deployment is supported on all major cloud platforms:
-- **AWS:** ECS/EKS, RDS, S3, CloudFront
-- **Azure:** AKS, Cosmos DB, Blob Storage
-- **Google Cloud:** GKE, Cloud SQL, Cloud Storage
-- **Private Cloud:** Support for on-premises deployment
+### Security Requirements
 
-### Monitoring
-Comprehensive monitoring ensures system health:
-- **Application Performance:** Real-time metrics on system performance
-- **Infrastructure Health:** Server, network, and storage monitoring
-- **Error Tracking:** Automated error detection and reporting
-- **User Analytics:** Usage patterns and feature adoption metrics
-- **Alerting:** Multi-channel notifications for critical issues
+#### Data Protection
+- **In Transit:** TLS 1.3 with modern cipher suites
+- **At Rest:** AES-256 encryption for sensitive data
+- **Field Level Encryption:** For PII and critical measurement data
 
-## Security & Compliance
+#### Access Control
+- **RBAC:** Role-based permissions with principle of least privilege
+- **API Security:** Rate limiting, payload validation, and OWASP protection
+- **Device Security:** Certificate-based authentication for IoT devices
 
-### Data Protection
-- **Encryption:** Data encrypted both at rest and in transit
-- **Access Control:** Role-based permissions system with principle of least privilege
-- **Data Masking:** Protection of sensitive information in reports and displays
+#### Compliance
 - **Audit Trails:** Comprehensive logging of all system interactions
-- **Data Retention:** Configurable policies for long-term data management
+- **Data Retention:** Configurable policies based on regulatory requirements
+- **Regulatory Standards:** GDPR, CCPA, and water industry regulations
 
-### Regulatory Compliance
-Built-in support for water quality regulations:
-- **Safe Drinking Water Act (SDWA):** Compliance tracking and reporting
-- **Clean Water Act (CWA):** Discharge monitoring and permit management
-- **NPDWR:** National Primary Drinking Water Regulations enforcement
-- **ISO Standards:** Alignment with ISO water quality requirements
-- **Regional Regulations:** Configurable rules engine for local compliance
+## Development & Deployment
 
-## Getting Started
-
-### Prerequisites
-- Node.js 16+
-- npm or yarn
-- Docker (for full development environment)
-
-### Installation
-
-1. Clone the repository
+### Development Setup
 ```bash
+# Clone the repository
 git clone https://github.com/your-org/hydra.git
 cd hydra
-```
 
-2. Install dependencies
-```bash
+# Install dependencies
 npm install
-# or
-yarn install
-```
 
-3. Start the development server
-```bash
+# Run the development server
 npm run dev
-# or
-yarn dev
-```
 
-4. Build for production
-```bash
+# Build for production
 npm run build
-# or
-yarn build
 ```
 
-5. Launch with Docker (optional)
-```bash
-docker-compose up -d
+### Environment Configuration
+The application requires the following environment variables:
+```
+VITE_API_BASE_URL=https://api.hydra-water.com
+VITE_WS_URL=wss://api.hydra-water.com/ws
+VITE_MAPS_API_KEY=your_maps_api_key
+VITE_AR_FEATURES_ENABLED=true
+VITE_AUTH_DOMAIN=auth.hydra-water.com
 ```
 
-## Documentation
+### Deployment Architecture
+The frontend is designed for deployment as:
+- **Static Assets:** Served from CDN for optimal performance
+- **Container-Based:** Docker images for consistency across environments
+- **SSR Option:** Server-side rendering option for SEO and initial load performance
 
-### User Guides
-- [Administrative Guide](https://hydra-docs.example.com/admin)
-- [Field Technician Manual](https://hydra-docs.example.com/field)
-- [Data Analyst Handbook](https://hydra-docs.example.com/analysis)
+### CI/CD Pipeline
+The recommended CI/CD workflow includes:
+- **Automated Testing:** Unit, integration, and E2E tests
+- **Build Validation:** Type checking, lint validation, and bundle analysis
+- **Deployment Stages:** Development, staging, and production environments
+- **Rollback Capability:** Immediate rollback to previous versions if issues are detected
 
-### API Reference
-- [REST API Documentation](https://hydra-docs.example.com/api)
-- [GraphQL Schema](https://hydra-docs.example.com/graphql)
-- [WebSocket Events](https://hydra-docs.example.com/websockets)
+## Support & Documentation
 
-### Developer Resources
-- [Architecture Overview](https://hydra-docs.example.com/architecture)
-- [Component Library](https://hydra-docs.example.com/components)
-- [Data Models](https://hydra-docs.example.com/models)
-- [Integration Examples](https://hydra-docs.example.com/integration)
-
-## Support & Community
-
-- **Documentation:** Comprehensive guides at [docs.hydra-water.com](https://docs.hydra-water.com)
-- **Community Forum:** Engage with other users at [community.hydra-water.com](https://community.hydra-water.com)
-- **Professional Services:** Implementation and customization support
-- **Training:** Virtual and on-site training programs
-- **Enterprise Support:** 24/7 support for mission-critical deployments
+- **Technical Documentation:** Comprehensive developer guides at [docs.hydra-water.com](https://docs.hydra-water.com)
+- **API Documentation:** Interactive API reference at [api.hydra-water.com/docs](https://api.hydra-water.com/docs)
+- **Integration Guides:** Step-by-step guides for backend, ML, and ERP integration
+- **User Guides:** Role-based documentation for different platform users
 
 ## License
 This project is proprietary and confidential.
 © 2023 Hydra Water Technologies
 
 ## Contact
-For support or inquiries, contact support@hydra-water.com
+For technical questions or support, contact: dev-support@hydra-water.com

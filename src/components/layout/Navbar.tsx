@@ -1,5 +1,5 @@
 
-import { Bell, Menu, Settings, Sun, Moon, User, LogOut, HelpCircle, ChevronDown } from "lucide-react";
+import { Bell, Menu, Settings, Sun, Moon, User, LogOut, HelpCircle, ChevronDown, Shield, FileText, AlertTriangle, Database, Activity, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,6 +32,10 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 interface NavbarProps {
   isEmergencyMode: boolean;
@@ -45,11 +49,11 @@ interface NotificationType {
   time: string;
   read: boolean;
   priority: 'low' | 'medium' | 'high';
-  type: 'system' | 'alert' | 'update';
+  type: 'system' | 'alert' | 'update' | 'maintenance' | 'security';
 }
 
 export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
-  const [notificationsCount, setNotificationsCount] = useState(3);
+  const [notificationsCount, setNotificationsCount] = useState(5);
   const [notifications, setNotifications] = useState<NotificationType[]>([
     {
       id: '1',
@@ -77,12 +81,32 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
       read: false,
       priority: 'low',
       type: 'update'
+    },
+    {
+      id: '4',
+      title: 'Security Alert',
+      description: 'Unusual login activity detected from unknown IP address. Please verify account security.',
+      time: '5 hours ago',
+      read: false,
+      priority: 'high',
+      type: 'security'
+    },
+    {
+      id: '5',
+      title: 'Scheduled Maintenance',
+      description: 'System maintenance scheduled for tomorrow at 2:00 AM. Expected downtime: 30 minutes.',
+      time: '12 hours ago',
+      read: false,
+      priority: 'medium',
+      type: 'maintenance'
     }
   ]);
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [activeProfileTab, setActiveProfileTab] = useState("account");
+  const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -119,12 +143,60 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
     }
   };
 
-  const getTypeIcon = (type: 'system' | 'alert' | 'update') => {
+  const getTypeIcon = (type: 'system' | 'alert' | 'update' | 'maintenance' | 'security') => {
     switch (type) {
-      case 'alert': return <Bell className="h-4 w-4 text-water-danger" />;
+      case 'alert': return <AlertTriangle className="h-4 w-4 text-water-danger" />;
       case 'system': return <Settings className="h-4 w-4 text-blue-500" />;
-      case 'update': return <ChevronDown className="h-4 w-4 text-green-500" />;
+      case 'update': return <ArrowUpRight className="h-4 w-4 text-green-500" />;
+      case 'maintenance': return <Activity className="h-4 w-4 text-amber-500" />;
+      case 'security': return <Shield className="h-4 w-4 text-purple-500" />;
     }
+  };
+
+  const handleNotificationAction = (notificationId: string, action: 'view' | 'dismiss' | 'share') => {
+    switch (action) {
+      case 'view':
+        const notification = notifications.find(n => n.id === notificationId);
+        if (notification) {
+          markAsRead(notificationId);
+          toast({
+            title: notification.title,
+            description: notification.description,
+          });
+        }
+        break;
+      case 'dismiss':
+        clearNotification(notificationId);
+        break;
+      case 'share':
+        toast({
+          title: "Notification Shared",
+          description: "This alert has been shared with your team",
+        });
+        break;
+    }
+  };
+
+  const handleChangePassword = () => {
+    toast({
+      title: "Password Changed",
+      description: "Your password has been updated successfully",
+    });
+    setSecurityDialogOpen(false);
+  };
+
+  const handleLogout = () => {
+    toast({
+      title: "Logged Out",
+      description: "You have been logged out successfully",
+    });
+  };
+
+  const handleSaveSettings = (tab: string) => {
+    toast({
+      title: "Settings Saved",
+      description: `Your ${tab} settings have been updated successfully`,
+    });
   };
 
   return (
@@ -305,6 +377,32 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                             </div>
                           </div>
                         </div>
+                        <div className="flex gap-1 mt-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-7 text-xs flex-1"
+                            onClick={() => handleNotificationAction(notification.id, 'view')}
+                          >
+                            View
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-7 text-xs flex-1"
+                            onClick={() => handleNotificationAction(notification.id, 'share')}
+                          >
+                            Share
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="h-7 text-xs flex-1"
+                            onClick={() => handleNotificationAction(notification.id, 'dismiss')}
+                          >
+                            Dismiss
+                          </Button>
+                        </div>
                         <DropdownMenuSeparator className="my-1" />
                       </div>
                     ))
@@ -333,7 +431,10 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                 <DropdownMenuLabel>Settings</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    setProfileDialogOpen(true);
+                    setActiveProfileTab("account");
+                  }}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
@@ -344,31 +445,57 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                     </DropdownMenuSubTrigger>
                     <DropdownMenuPortal>
                       <DropdownMenuSubContent>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setProfileDialogOpen(true);
+                          setActiveProfileTab("preferences");
+                          toast({
+                            title: "Notification Settings",
+                            description: "Configure your email alert preferences here",
+                          });
+                        }}>
                           <span>Email Alerts</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setProfileDialogOpen(true);
+                          setActiveProfileTab("preferences");
+                          toast({
+                            title: "Notification Settings",
+                            description: "Configure your push notification preferences here",
+                          });
+                        }}>
                           <span>Push Notifications</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => {
+                          setProfileDialogOpen(true);
+                          setActiveProfileTab("preferences");
+                        }}>
                           <span>Notification Settings</span>
                         </DropdownMenuItem>
                       </DropdownMenuSubContent>
                     </DropdownMenuPortal>
                   </DropdownMenuSub>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {
+                    setProfileDialogOpen(true);
+                    setActiveProfileTab("preferences");
+                  }}>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>System Preferences</span>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  toast({
+                    title: "Help & Documentation",
+                    description: "Opening documentation in a new tab",
+                  });
+                  window.open("#", "_blank");
+                }}>
                   <HelpCircle className="mr-2 h-4 w-4" />
                   <span>Help & Documentation</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-water-danger">
+                <DropdownMenuItem className="text-water-danger" onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Log out</span>
                 </DropdownMenuItem>
@@ -385,7 +512,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
       
       {/* User Profile Dialog */}
       <Dialog open={profileDialogOpen} onOpenChange={setProfileDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>User Profile</DialogTitle>
             <DialogDescription>
@@ -394,100 +521,244 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
           </DialogHeader>
           
           <div className="flex flex-col items-center py-4">
-            <Avatar className="h-24 w-24 mb-4">
+            <Avatar className="h-24 w-24 mb-4 border-4 border-white shadow-md">
               <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
             <h2 className="text-xl font-bold">John Doe</h2>
             <p className="text-gray-500">Water Quality Specialist</p>
             <p className="text-sm text-gray-500 mt-1">john.doe@hydra.com</p>
+            <div className="flex gap-2 mt-3">
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 hover:bg-blue-100">
+                Administrator
+              </Badge>
+              <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-100">
+                Certified Analyst
+              </Badge>
+            </div>
           </div>
           
-          <Tabs defaultValue="account" className="w-full">
+          <Tabs defaultValue={activeProfileTab} value={activeProfileTab} onValueChange={setActiveProfileTab} className="w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="account">Account</TabsTrigger>
               <TabsTrigger value="preferences">Preferences</TabsTrigger>
               <TabsTrigger value="security">Security</TabsTrigger>
             </TabsList>
             <TabsContent value="account" className="mt-4">
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-sm font-medium">Name</h3>
-                  <p className="text-sm text-gray-500">John Doe</p>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input id="fullName" defaultValue="John Doe" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" defaultValue="john.doe@hydra.com" type="email" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="role">Role</Label>
+                    <Input id="role" defaultValue="Water Quality Specialist" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="department">Department</Label>
+                    <Input id="department" defaultValue="Quality Assessment" />
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium">Email</h3>
-                  <p className="text-sm text-gray-500">john.doe@hydra.com</p>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="bio">Bio</Label>
+                  <textarea 
+                    id="bio"
+                    rows={3}
+                    className="w-full min-h-[80px] rounded-md border border-gray-300 p-2 text-sm"
+                    defaultValue="Water quality specialist with over 8 years of experience in environmental monitoring and compliance. Certified in advanced water treatment technologies."
+                  />
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium">Role</h3>
-                  <p className="text-sm text-gray-500">Water Quality Specialist</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium">Department</h3>
-                  <p className="text-sm text-gray-500">Quality Assessment</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium">Member Since</h3>
-                  <p className="text-sm text-gray-500">March 2023</p>
+                
+                <div className="pt-4 flex justify-end">
+                  <Button 
+                    onClick={() => handleSaveSettings('account')}
+                  >
+                    Save Changes
+                  </Button>
                 </div>
               </div>
             </TabsContent>
             <TabsContent value="preferences" className="mt-4">
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-sm font-medium">Theme Preference</h3>
-                  <p className="text-sm text-gray-500">System Default (Auto)</p>
+              <div className="space-y-4">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="darkMode">Dark Mode</Label>
+                      <p className="text-xs text-gray-500">Use dark theme for the application</p>
+                    </div>
+                    <Switch 
+                      id="darkMode" 
+                      checked={isEmergencyMode}
+                      onCheckedChange={setIsEmergencyMode}
+                    />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="emailNotifs">Email Notifications</Label>
+                      <p className="text-xs text-gray-500">Receive alerts via email</p>
+                    </div>
+                    <Switch id="emailNotifs" defaultChecked />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="pushNotifs">Push Notifications</Label>
+                      <p className="text-xs text-gray-500">Receive alerts on your device</p>
+                    </div>
+                    <Switch id="pushNotifs" defaultChecked />
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="voiceCommands">Voice Commands</Label>
+                      <p className="text-xs text-gray-500">Enable voice control features</p>
+                    </div>
+                    <Switch id="voiceCommands" defaultChecked />
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium">Notification Preferences</h3>
-                  <p className="text-sm text-gray-500">Email, Push, In-app</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium">Data Display</h3>
-                  <p className="text-sm text-gray-500">Metric Units</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium">AI Assistant</h3>
-                  <p className="text-sm text-gray-500">Enabled with voice recognition</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium">Language</h3>
-                  <p className="text-sm text-gray-500">English (US)</p>
+                
+                <div className="pt-4 flex justify-end">
+                  <Button 
+                    onClick={() => handleSaveSettings('preferences')}
+                  >
+                    Save Preferences
+                  </Button>
                 </div>
               </div>
             </TabsContent>
             <TabsContent value="security" className="mt-4">
-              <div className="space-y-3">
-                <div>
-                  <h3 className="text-sm font-medium">Password</h3>
-                  <p className="text-sm text-gray-500">Last changed 2 months ago</p>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-sm font-medium">Password</h3>
+                      <p className="text-sm text-gray-500">Last changed 2 months ago</p>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={() => setSecurityDialogOpen(true)}>
+                      Change Password
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium">Two-Factor Authentication</h3>
-                  <p className="text-sm text-gray-500">Enabled (Authenticator App)</p>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="text-sm font-medium">Two-Factor Authentication</h3>
+                      <p className="text-sm text-gray-500">Enhanced security for your account</p>
+                    </div>
+                    <Switch id="2fa" defaultChecked />
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium">Login Sessions</h3>
-                  <p className="text-sm text-gray-500">2 active sessions</p>
+                
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium">Active Sessions</h3>
+                  <div className="rounded-md border border-gray-200 p-3">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-sm font-medium">Current Session</p>
+                        <p className="text-xs text-gray-500">Chrome • Windows • Boston, US</p>
+                        <p className="text-xs text-gray-500">Started 1 hour ago</p>
+                      </div>
+                      <Badge>Active</Badge>
+                    </div>
+                    <div className="h-px bg-gray-200 my-2"></div>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-sm font-medium">Mobile App</p>
+                        <p className="text-xs text-gray-500">iOS • iPhone • Boston, US</p>
+                        <p className="text-xs text-gray-500">Started 3 days ago</p>
+                      </div>
+                      <Button variant="outline" size="sm" className="h-7 text-xs">
+                        Log Out
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-sm font-medium">Access Level</h3>
-                  <p className="text-sm text-gray-500">Administrator</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium">API Keys</h3>
-                  <p className="text-sm text-gray-500">3 active keys</p>
+                
+                <div className="pt-4 flex justify-end">
+                  <Button
+                    variant="destructive"
+                    onClick={handleLogout}
+                  >
+                    Log Out of All Devices
+                  </Button>
                 </div>
               </div>
             </TabsContent>
           </Tabs>
           
           <DialogFooter className="flex justify-between">
-            <Button variant="destructive" size="sm">Log Out</Button>
-            <DialogClose asChild>
-              <Button>Close</Button>
-            </DialogClose>
+            <Button variant="outline" onClick={() => setProfileDialogOpen(false)}>
+              Close
+            </Button>
+            <Button onClick={() => handleSaveSettings(activeProfileTab)}>
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Change Password Dialog */}
+      <Dialog open={securityDialogOpen} onOpenChange={setSecurityDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+            <DialogDescription>
+              Enter your current password and new password below
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="current-password">Current Password</Label>
+              <Input id="current-password" type="password" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input id="new-password" type="password" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm New Password</Label>
+              <Input id="confirm-password" type="password" />
+            </div>
+            
+            <div className="space-y-2">
+              <h4 className="text-sm font-medium">Password Requirements:</h4>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-green-50 text-green-700">✓</Badge>
+                  <p className="text-xs text-gray-600">At least 8 characters</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-green-50 text-green-700">✓</Badge>
+                  <p className="text-xs text-gray-600">Contains uppercase letters</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-green-50 text-green-700">✓</Badge>
+                  <p className="text-xs text-gray-600">Contains lowercase letters</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-green-50 text-green-700">✓</Badge>
+                  <p className="text-xs text-gray-600">Contains at least one number</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter className="flex justify-between">
+            <Button variant="outline" onClick={() => setSecurityDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleChangePassword}>
+              Update Password
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
