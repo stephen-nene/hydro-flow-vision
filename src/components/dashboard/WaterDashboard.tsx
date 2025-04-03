@@ -7,6 +7,8 @@ import { WaterQualityMetrics } from "@/components/dashboard/WaterQualityMetrics"
 import { LiveAlerts } from "@/components/dashboard/LiveAlerts";
 import { mockWaterData } from "@/data/mockData";
 import { WaterSample } from "@/types/water";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface WaterDashboardProps {
   isEmergencyMode: boolean;
@@ -16,6 +18,7 @@ export function WaterDashboard({ isEmergencyMode }: WaterDashboardProps) {
   const [waterSamples, setWaterSamples] = useState<WaterSample[]>([]);
   const [criticalCases, setCriticalCases] = useState<WaterSample[]>([]);
   const [overallToxicity, setOverallToxicity] = useState(0);
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     // Simulate fetching data
@@ -45,45 +48,55 @@ export function WaterDashboard({ isEmergencyMode }: WaterDashboardProps) {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Main Toxicity Gauge */}
-        <div className="lg:col-span-4">
-          <div className={`p-6 rounded-xl ${isEmergencyMode ? 'bg-gray-900' : 'glass-card'}`}>
-            <ToxicityGauge value={overallToxicity} isEmergencyMode={isEmergencyMode} />
-          </div>
-        </div>
+      <Tabs 
+        defaultValue="overview" 
+        value={activeTab} 
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
+        <TabsList className="grid w-full grid-cols-3 lg:max-w-md">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="metrics">Analytics</TabsTrigger>
+          <TabsTrigger value="cases">Priority Cases</TabsTrigger>
+        </TabsList>
+        
+        {/* Overview Tab - Key info at a glance */}
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Main Toxicity Gauge */}
+            <Card className={`p-4 ${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'glass-card'}`}>
+              <ToxicityGauge value={overallToxicity} isEmergencyMode={isEmergencyMode} />
+            </Card>
 
-        {/* Quick Action Buttons */}
-        <div className="lg:col-span-4">
-          <div className={`p-6 rounded-xl ${isEmergencyMode ? 'bg-gray-900' : 'glass-card'}`}>
-            <QuickActions isEmergencyMode={isEmergencyMode} />
-          </div>
-        </div>
+            {/* Live Alerts */}
+            <Card className={`p-4 ${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'glass-card'}`}>
+              <LiveAlerts isEmergencyMode={isEmergencyMode} alerts={criticalCases} />
+            </Card>
 
-        {/* Live Alerts */}
-        <div className="lg:col-span-4">
-          <div className={`p-6 rounded-xl ${isEmergencyMode ? 'bg-gray-900' : 'glass-card'}`}>
-            <LiveAlerts isEmergencyMode={isEmergencyMode} alerts={criticalCases} />
+            {/* Quick Action Buttons */}
+            <Card className={`p-4 ${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'glass-card'}`}>
+              <QuickActions isEmergencyMode={isEmergencyMode} />
+            </Card>
           </div>
-        </div>
-
-        {/* Priority Cases Carousel - Spans full width */}
-        <div className="lg:col-span-12">
-          <div className={`p-6 rounded-xl ${isEmergencyMode ? 'bg-gray-900' : 'glass-card'}`}>
+        </TabsContent>
+        
+        {/* Metrics Tab - Detailed analytics */}
+        <TabsContent value="metrics" className="space-y-4">
+          <Card className={`p-4 ${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'glass-card'}`}>
+            <WaterQualityMetrics isEmergencyMode={isEmergencyMode} waterSamples={waterSamples} />
+          </Card>
+        </TabsContent>
+        
+        {/* Priority Cases Tab */}
+        <TabsContent value="cases" className="space-y-4">
+          <Card className={`p-4 ${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'glass-card'}`}>
             <h2 className={`text-xl font-semibold mb-4 ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
               Priority Cases
             </h2>
             <PriorityCasesCarousel cases={criticalCases} isEmergencyMode={isEmergencyMode} />
-          </div>
-        </div>
-
-        {/* Water Quality Metrics - Spans full width */}
-        <div className="lg:col-span-12">
-          <div className={`p-6 rounded-xl ${isEmergencyMode ? 'bg-gray-900' : 'glass-card'}`}>
-            <WaterQualityMetrics isEmergencyMode={isEmergencyMode} waterSamples={waterSamples} />
-          </div>
-        </div>
-      </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
