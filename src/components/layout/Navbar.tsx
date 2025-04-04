@@ -1,3 +1,4 @@
+
 import { Bell, Menu, Settings, User, LogOut, HelpCircle, ChevronDown, Shield, FileText, AlertTriangle, Database, Activity, ArrowUpRight, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -35,9 +36,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
-interface NavbarProps {
-  // No emergency mode prop
-}
+interface NavbarProps {}
 
 interface NotificationType {
   id: string;

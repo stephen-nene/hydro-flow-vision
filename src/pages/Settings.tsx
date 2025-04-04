@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 const Settings = () => {
-  const [isEmergencyMode, setIsEmergencyMode] = useState(false);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -77,10 +76,10 @@ const Settings = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isEmergencyMode ? 'emergency-mode' : ''}`}>
-      <Navbar isEmergencyMode={isEmergencyMode} setIsEmergencyMode={setIsEmergencyMode} />
+    <div className="min-h-screen">
+      <Navbar />
       <div className="flex">
-        {!isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+        {!isMobile && <Sidebar />}
         <main className="flex-1 p-4 md:p-6 max-w-full overflow-x-hidden">
           <Breadcrumb className="mb-4 md:mb-6">
             <BreadcrumbList>
@@ -102,10 +101,10 @@ const Settings = () => {
           </Breadcrumb>
 
           <div className="mb-6">
-            <h1 className={`text-3xl font-bold mb-2 ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
+            <h1 className="text-3xl font-bold mb-2 text-water-dark">
               System Settings
             </h1>
-            <p className={`text-lg ${isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className="text-lg text-gray-600">
               Configure and customize your Hydra platform experience
             </p>
           </div>
@@ -114,9 +113,7 @@ const Settings = () => {
             {settingsCategories.map((category) => (
               <Card 
                 key={category.id}
-                className={`h-full cursor-pointer transition-all duration-300 hover:shadow-md ${
-                  isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white border-water-light/80'
-                }`}
+                className="h-full cursor-pointer transition-all duration-300 hover:shadow-md bg-white border-water-light/80"
                 onClick={() => navigateToSetting(category.route)}
               >
                 <CardHeader>
@@ -124,7 +121,7 @@ const Settings = () => {
                     <div className="text-3xl">{category.icon}</div>
                     <div>
                       <CardTitle className="text-xl">{category.title}</CardTitle>
-                      <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                      <CardDescription className="text-gray-600">
                         {category.description}
                       </CardDescription>
                     </div>
@@ -140,7 +137,7 @@ const Settings = () => {
           </div>
         </main>
       </div>
-      {isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+      {isMobile && <Sidebar />}
     </div>
   );
 };

@@ -5,11 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Mic, MicOff } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
-interface VoiceCommandButtonProps {
-  isEmergencyMode: boolean;
-}
-
-export function VoiceCommandButton({ isEmergencyMode }: VoiceCommandButtonProps) {
+export function VoiceCommandButton() {
   const [isListening, setIsListening] = useState(false);
   const [ripples, setRipples] = useState<Array<{ id: number; opacity: number }>>([]);
   const { toast } = useToast();
@@ -39,7 +35,6 @@ export function VoiceCommandButton({ isEmergencyMode }: VoiceCommandButtonProps)
           toast({
             title: "Voice command recognized",
             description: "Analyzing water sample #1082 now",
-            variant: isEmergencyMode ? "destructive" : "default"
           });
         }
       }, 3000);
@@ -48,7 +43,7 @@ export function VoiceCommandButton({ isEmergencyMode }: VoiceCommandButtonProps)
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isListening, toast, isEmergencyMode]);
+  }, [isListening, toast]);
   
   const toggleListening = () => {
     setIsListening(!isListening);
@@ -71,7 +66,7 @@ export function VoiceCommandButton({ isEmergencyMode }: VoiceCommandButtonProps)
           key={ripple.id}
           className={cn(
             "absolute inset-0 rounded-full animate-ripple",
-            isEmergencyMode ? "bg-water-danger/30" : "bg-water-dark/20"
+            "bg-water-dark/20"
           )}
         />
       ))}
@@ -81,12 +76,8 @@ export function VoiceCommandButton({ isEmergencyMode }: VoiceCommandButtonProps)
         className={cn(
           "relative w-full py-6",
           isListening
-            ? isEmergencyMode 
-              ? "bg-water-danger hover:bg-water-danger/90" 
-              : "bg-water-dark hover:bg-water-dark/90"
-            : isEmergencyMode
-              ? "bg-gray-800 hover:bg-gray-700"
-              : "bg-water-light hover:bg-water-light/90 text-water-dark"
+            ? "bg-water-dark hover:bg-water-dark/90"
+            : "bg-water-light hover:bg-water-light/90 text-water-dark"
         )}
       >
         <div className="flex items-center gap-2">

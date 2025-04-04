@@ -23,9 +23,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
-interface SidebarProps {
-  // Remove emergency mode prop
-}
+interface SidebarProps {}
 
 export function Sidebar({}: SidebarProps) {
   const location = useLocation();

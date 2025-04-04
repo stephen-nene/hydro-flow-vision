@@ -26,11 +26,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 
-interface QuickActionsProps {
-  isEmergencyMode: boolean;
-}
-
-export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
+export function QuickActions() {
   const [runningAnalysis, setRunningAnalysis] = useState(false);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
@@ -95,19 +91,14 @@ export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
     setTreatmentDialogOpen(false);
     
     toast({
-      title: isEmergencyMode ? "Emergency Response Initiated" : "Treatment Plan Created",
-      description: isEmergencyMode 
-        ? "Emergency response teams have been dispatched to the affected area." 
-        : "Your treatment plan has been created and added to the schedule.",
+      title: "Treatment Plan Created",
+      description: "Your treatment plan has been created and added to the schedule.",
     });
   };
 
   return (
     <div className="space-y-4">
-      <h2 className={cn(
-        "text-xl font-semibold",
-        isEmergencyMode ? "text-water-danger" : "text-water-dark"
-      )}>
+      <h2 className="text-xl font-semibold text-water-dark">
         Quick Actions
       </h2>
 
@@ -116,15 +107,10 @@ export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
           <DialogTrigger asChild>
             <Button 
               variant="outline" 
-              className={cn(
-                "h-24 flex flex-col items-center justify-center space-y-1 text-sm",
-                isEmergencyMode 
-                  ? "bg-gray-800 border-gray-700 text-white hover:bg-gray-700" 
-                  : "bg-white border-gray-200 hover:bg-gray-50"
-              )}
+              className="h-24 flex flex-col items-center justify-center space-y-1 text-sm bg-white border-gray-200 hover:bg-gray-50"
               onClick={handleRunAnalysis}
             >
-              <TestTube className={isEmergencyMode ? "h-6 w-6 text-water-light" : "h-6 w-6 text-water-dark"} />
+              <TestTube className="h-6 w-6 text-water-dark" />
               <span>Run Analysis</span>
             </Button>
           </DialogTrigger>
@@ -188,15 +174,10 @@ export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
           <DialogTrigger asChild>
             <Button 
               variant="outline" 
-              className={cn(
-                "h-24 flex flex-col items-center justify-center space-y-1 text-sm",
-                isEmergencyMode 
-                  ? "bg-gray-800 border-gray-700 text-white hover:bg-gray-700" 
-                  : "bg-white border-gray-200 hover:bg-gray-50"
-              )}
+              className="h-24 flex flex-col items-center justify-center space-y-1 text-sm bg-white border-gray-200 hover:bg-gray-50"
               onClick={handleGenerateReport}
             >
-              <FileText className={isEmergencyMode ? "h-6 w-6 text-water-light" : "h-6 w-6 text-water-dark"} />
+              <FileText className="h-6 w-6 text-water-dark" />
               <span>Generate Report</span>
             </Button>
           </DialogTrigger>
@@ -289,15 +270,10 @@ export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
           <DialogTrigger asChild>
             <Button 
               variant="outline" 
-              className={cn(
-                "h-24 flex flex-col items-center justify-center space-y-1 text-sm",
-                isEmergencyMode 
-                  ? "bg-gray-800 border-gray-700 text-white hover:bg-gray-700" 
-                  : "bg-white border-gray-200 hover:bg-gray-50"
-              )}
+              className="h-24 flex flex-col items-center justify-center space-y-1 text-sm bg-white border-gray-200 hover:bg-gray-50"
               onClick={handleNotifyTeam}
             >
-              <Send className={isEmergencyMode ? "h-6 w-6 text-water-light" : "h-6 w-6 text-water-dark"} />
+              <Send className="h-6 w-6 text-water-dark" />
               <span>Notify Team</span>
             </Button>
           </DialogTrigger>
@@ -330,7 +306,7 @@ export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
                   <Label htmlFor="priority" className="text-right">
                     Priority
                   </Label>
-                  <Select defaultValue={isEmergencyMode ? "high" : "medium"}>
+                  <Select defaultValue="medium">
                     <SelectTrigger className="col-span-3">
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
@@ -350,7 +326,7 @@ export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
                     id="subject"
                     placeholder="Enter message subject"
                     className="col-span-3"
-                    defaultValue={isEmergencyMode ? "URGENT: Water Quality Alert" : "Water Quality Update"}
+                    defaultValue="Water Quality Update"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-start gap-4">
@@ -361,9 +337,7 @@ export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
                     id="message"
                     className="col-span-3 flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     placeholder="Enter your message here"
-                    defaultValue={isEmergencyMode 
-                      ? "Elevated toxicity levels detected in the main water supply. Immediate assessment required." 
-                      : "New water quality test results have been uploaded to the system. Please review at your earliest convenience."}
+                    defaultValue="New water quality test results have been uploaded to the system. Please review at your earliest convenience."
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -374,7 +348,7 @@ export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
                       <Label htmlFor="send-email">Send via email</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Checkbox id="send-sms" defaultChecked={isEmergencyMode} />
+                      <Checkbox id="send-sms" />
                       <Label htmlFor="send-sms">Send via SMS</Label>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -397,191 +371,105 @@ export function QuickActions({ isEmergencyMode }: QuickActionsProps) {
         <Dialog open={treatmentDialogOpen} onOpenChange={setTreatmentDialogOpen}>
           <DialogTrigger asChild>
             <Button 
-              className={cn(
-                "h-24 flex flex-col items-center justify-center space-y-1 text-sm",
-                isEmergencyMode 
-                  ? "bg-water-danger hover:bg-water-danger/90" 
-                  : "bg-water-dark hover:bg-water-dark/90"
-              )}
+              className="h-24 flex flex-col items-center justify-center space-y-1 text-sm bg-water-dark hover:bg-water-dark/90"
               onClick={handleTreatmentOptions}
             >
               <AlertTriangle className="h-6 w-6" />
-              <span>{isEmergencyMode ? "Emergency Response" : "Treatment Options"}</span>
+              <span>Treatment Options</span>
             </Button>
           </DialogTrigger>
           <DialogContent>
             <form onSubmit={confirmTreatmentAction}>
               <DialogHeader>
                 <DialogTitle>
-                  {isEmergencyMode ? "Emergency Response Protocol" : "Water Treatment Options"}
+                  Water Treatment Options
                 </DialogTitle>
                 <DialogDescription>
-                  {isEmergencyMode 
-                    ? "Initiate immediate response actions for critical water quality issues." 
-                    : "Select appropriate treatment methods for the current water quality conditions."}
+                  Select appropriate treatment methods for the current water quality conditions.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                {isEmergencyMode ? (
-                  <>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="emergency-type" className="text-right">
-                        Emergency Type
-                      </Label>
-                      <Select defaultValue="contamination">
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Select emergency type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="contamination">Chemical Contamination</SelectItem>
-                          <SelectItem value="biological">Biological Hazard</SelectItem>
-                          <SelectItem value="infrastructure">Infrastructure Failure</SelectItem>
-                          <SelectItem value="natural">Natural Disaster</SelectItem>
-                        </SelectContent>
-                      </Select>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="water-source" className="text-right">
+                    Water Source
+                  </Label>
+                  <Select defaultValue="municipal">
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select water source" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="municipal">Municipal Supply</SelectItem>
+                      <SelectItem value="groundwater">Groundwater Well</SelectItem>
+                      <SelectItem value="surface">Surface Water</SelectItem>
+                      <SelectItem value="rainwater">Rainwater Collection</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="treatment-goal" className="text-right">
+                    Treatment Goal
+                  </Label>
+                  <Select defaultValue="contaminant">
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select primary goal" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="contaminant">Contaminant Removal</SelectItem>
+                      <SelectItem value="disinfection">Disinfection</SelectItem>
+                      <SelectItem value="minerals">Mineral Balancing</SelectItem>
+                      <SelectItem value="taste">Taste & Odor Improvement</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="treatment-method" className="text-right">
+                    Treatment Method
+                  </Label>
+                  <Select defaultValue="multi">
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select treatment method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="filtration">Filtration</SelectItem>
+                      <SelectItem value="chemical">Chemical Treatment</SelectItem>
+                      <SelectItem value="biological">Biological Treatment</SelectItem>
+                      <SelectItem value="multi">Multi-Stage Treatment</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-start gap-4">
+                  <Label htmlFor="options" className="text-right pt-2">
+                    Options
+                  </Label>
+                  <div className="col-span-3 space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="carbon" defaultChecked />
+                      <Label htmlFor="carbon">Activated Carbon Filtration</Label>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="response-level" className="text-right">
-                        Response Level
-                      </Label>
-                      <Select defaultValue="level3">
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Select response level" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="level1">Level 1 - Localized Issue</SelectItem>
-                          <SelectItem value="level2">Level 2 - Moderate Risk</SelectItem>
-                          <SelectItem value="level3">Level 3 - High Risk</SelectItem>
-                          <SelectItem value="level4">Level 4 - Critical Emergency</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="uv" defaultChecked />
+                      <Label htmlFor="uv">UV Disinfection</Label>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="affected-area" className="text-right">
-                        Affected Area
-                      </Label>
-                      <Input
-                        id="affected-area"
-                        placeholder="Enter affected area"
-                        className="col-span-3"
-                        defaultValue="North District Water Supply"
-                      />
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="chlorination" defaultChecked />
+                      <Label htmlFor="chlorination">Chlorination</Label>
                     </div>
-                    <div className="grid grid-cols-4 items-start gap-4">
-                      <Label htmlFor="actions" className="text-right pt-2">
-                        Actions
-                      </Label>
-                      <div className="col-span-3 space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="isolate" defaultChecked />
-                          <Label htmlFor="isolate">Isolate affected water supply</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="notify-public" defaultChecked />
-                          <Label htmlFor="notify-public">Issue public notification</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="deploy-team" defaultChecked />
-                          <Label htmlFor="deploy-team">Deploy emergency response team</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="alternative" defaultChecked />
-                          <Label htmlFor="alternative">Activate alternative water supply</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="authorities" defaultChecked />
-                          <Label htmlFor="authorities">Contact regulatory authorities</Label>
-                        </div>
-                      </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="ro" />
+                      <Label htmlFor="ro">Reverse Osmosis</Label>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="water-source" className="text-right">
-                        Water Source
-                      </Label>
-                      <Select defaultValue="municipal">
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Select water source" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="municipal">Municipal Supply</SelectItem>
-                          <SelectItem value="groundwater">Groundwater Well</SelectItem>
-                          <SelectItem value="surface">Surface Water</SelectItem>
-                          <SelectItem value="rainwater">Rainwater Collection</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="ion" />
+                      <Label htmlFor="ion">Ion Exchange</Label>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="treatment-goal" className="text-right">
-                        Treatment Goal
-                      </Label>
-                      <Select defaultValue="contaminant">
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Select primary goal" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="contaminant">Contaminant Removal</SelectItem>
-                          <SelectItem value="disinfection">Disinfection</SelectItem>
-                          <SelectItem value="minerals">Mineral Balancing</SelectItem>
-                          <SelectItem value="taste">Taste & Odor Improvement</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="treatment-method" className="text-right">
-                        Treatment Method
-                      </Label>
-                      <Select defaultValue="multi">
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Select treatment method" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="filtration">Filtration</SelectItem>
-                          <SelectItem value="chemical">Chemical Treatment</SelectItem>
-                          <SelectItem value="biological">Biological Treatment</SelectItem>
-                          <SelectItem value="multi">Multi-Stage Treatment</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid grid-cols-4 items-start gap-4">
-                      <Label htmlFor="options" className="text-right pt-2">
-                        Options
-                      </Label>
-                      <div className="col-span-3 space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="carbon" defaultChecked />
-                          <Label htmlFor="carbon">Activated Carbon Filtration</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="uv" defaultChecked />
-                          <Label htmlFor="uv">UV Disinfection</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="chlorination" defaultChecked />
-                          <Label htmlFor="chlorination">Chlorination</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="ro" />
-                          <Label htmlFor="ro">Reverse Osmosis</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox id="ion" />
-                          <Label htmlFor="ion">Ion Exchange</Label>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                )}
+                  </div>
+                </div>
               </div>
               <DialogFooter>
                 <DialogClose asChild>
                   <Button variant="outline">Cancel</Button>
                 </DialogClose>
-                <Button type="submit" variant={isEmergencyMode ? "destructive" : "default"}>
-                  {isEmergencyMode ? "Initiate Emergency Response" : "Apply Treatment Plan"}
-                </Button>
+                <Button type="submit">Apply Treatment Plan</Button>
               </DialogFooter>
             </form>
           </DialogContent>
