@@ -14,11 +14,7 @@ interface Prediction {
   description: string;
 }
 
-interface CrisisPredictionProps {
-  isEmergencyMode: boolean;
-}
-
-export const CrisisPrediction = ({ isEmergencyMode }: CrisisPredictionProps) => {
+export const CrisisPrediction = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [showPredictions, setShowPredictions] = useState(false);
@@ -79,7 +75,7 @@ export const CrisisPrediction = ({ isEmergencyMode }: CrisisPredictionProps) => 
       toast({
         title: "Crisis predictions ready",
         description: "5 potential water quality issues identified",
-        variant: isEmergencyMode ? "destructive" : "default"
+        variant: "default"
       });
     }, 2500);
   };
@@ -140,19 +136,17 @@ export const CrisisPrediction = ({ isEmergencyMode }: CrisisPredictionProps) => 
               <Card 
                 key={index} 
                 className={`p-4 ${
-                  isEmergencyMode 
-                    ? 'bg-gray-900 border-gray-800' 
-                    : prediction.risk > 75 
-                      ? 'bg-red-50 border-red-200' 
-                      : prediction.risk > 60 
-                        ? 'bg-amber-50 border-amber-200' 
-                        : 'bg-gray-50 border-gray-200'
+                  prediction.risk > 75 
+                    ? 'bg-red-50 border-red-200' 
+                    : prediction.risk > 60 
+                      ? 'bg-amber-50 border-amber-200' 
+                      : 'bg-gray-50 border-gray-200'
                 }`}
               >
                 <div className="flex flex-col md:flex-row md:items-center gap-3">
                   <div className="flex-1">
                     <div className="flex justify-between">
-                      <h4 className={`font-semibold flex items-center ${isEmergencyMode ? 'text-white' : 'text-gray-900'}`}>
+                      <h4 className="font-semibold flex items-center text-gray-900">
                         <MapPin className="h-4 w-4 mr-1 inline" />
                         {prediction.location}
                       </h4>
@@ -179,21 +173,21 @@ export const CrisisPrediction = ({ isEmergencyMode }: CrisisPredictionProps) => 
                     
                     <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
                       <div className="flex items-center">
-                        <span className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>Contaminant:</span>
-                        <span className={`text-xs ml-1 font-medium ${isEmergencyMode ? 'text-white' : 'text-gray-900'}`}>
+                        <span className="text-xs text-gray-500">Contaminant:</span>
+                        <span className="text-xs ml-1 font-medium text-gray-900">
                           {prediction.contaminant}
                         </span>
                       </div>
                       
                       <div className="flex items-center">
                         <Calendar className="h-3 w-3 mr-1" />
-                        <span className={`text-xs ${isEmergencyMode ? 'text-white' : 'text-gray-900'}`}>
+                        <span className="text-xs text-gray-900">
                           Expected in {prediction.timeFrame}
                         </span>
                       </div>
                     </div>
                     
-                    <p className={`mt-2 text-sm ${isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className="mt-2 text-sm text-gray-600">
                       {prediction.description}
                     </p>
                   </div>

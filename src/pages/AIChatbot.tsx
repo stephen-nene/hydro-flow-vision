@@ -3,14 +3,13 @@ import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Home, Send, Book, Shield, FileCheck, AlertTriangle, Scale } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Home, Book, Shield, Scale } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { WaterChatbot } from "@/components/chatbot/WaterChatbot";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { QuickReference } from "@/components/chatbot/QuickReference";
+import { ComplianceTools } from "@/components/chatbot/ComplianceTools";
 
 interface QuickReference {
   title: string;
@@ -19,8 +18,6 @@ interface QuickReference {
 }
 
 const AIChatbot = () => {
-  const [isEmergencyMode, setIsEmergencyMode] = useState(false);
-  const [inputMessage, setInputMessage] = useState("");
   const [activeReference, setActiveReference] = useState<QuickReference | null>(null);
   const isMobile = useIsMobile();
   const { toast } = useToast();
@@ -124,62 +121,17 @@ New microplastic monitoring requirements added in 2022 amendment`
   - Cost: Based on specifications`
     }
   ];
-  
-  const handleComplianceReport = () => {
-    toast({
-      title: "Generating compliance report",
-      description: "Analyzing water quality data against regulatory standards"
-    });
-    
-    setTimeout(() => {
-      toast({
-        title: "Compliance report ready",
-        description: "3 parameters exceed regulatory limits"
-      });
-      
-      window.location.href = "/reports?tab=compliance";
-    }, 2000);
-  };
-  
-  const handleRiskAssessment = () => {
-    toast({
-      title: "Conducting risk assessment",
-      description: "Analyzing historical data and contamination patterns"
-    });
-    
-    setTimeout(() => {
-      toast({
-        title: "Risk assessment complete",
-        description: "Medium risk level identified for lead contamination",
-        variant: "destructive"
-      });
-    }, 2500);
-  };
-  
-  const handleRegulatoryCrossCheck = () => {
-    toast({
-      title: "Running regulatory cross-check",
-      description: "Comparing sample against 27 regulatory frameworks"
-    });
-    
-    setTimeout(() => {
-      toast({
-        title: "Cross-check complete",
-        description: "Sample complies with 23/27 regulatory frameworks",
-      });
-    }, 2000);
-  };
-  
+
   const handleViewReference = (reference: QuickReference) => {
     setActiveReference(reference);
   };
 
   return (
-    <div className={`min-h-screen ${isEmergencyMode ? 'emergency-mode' : ''}`}>
-      <Navbar isEmergencyMode={isEmergencyMode} setIsEmergencyMode={setIsEmergencyMode} />
+    <div className="min-h-screen">
+      <Navbar />
       <div className="flex">
-        {!isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
-        <main className="flex-1 p-4 md:p-6">
+        {!isMobile && <Sidebar />}
+        <main className="flex-1 p-4 md:p-6 max-w-full overflow-x-hidden">
           <Breadcrumb className="mb-4 md:mb-6">
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -196,127 +148,41 @@ New microplastic monitoring requirements added in 2022 amendment`
           </Breadcrumb>
           
           <header className="mb-6">
-            <h1 className={`text-2xl md:text-3xl font-bold ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
+            <h1 className="text-2xl md:text-3xl font-bold text-water-dark">
               HydraLex AI Legal Assistant
             </h1>
-            <p className={`text-base md:text-lg ${isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className="text-base md:text-lg text-gray-600">
               AI-powered water regulations compliance assistant
             </p>
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {activeReference ? (
-              // Display reference details when selected
-              <div className="lg:col-span-2">
-                <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'} h-[calc(100vh-14rem)]`}>
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="flex items-center gap-2">
-                          <Book className="h-5 w-5 text-purple-500" />
-                          {activeReference.title}
-                        </CardTitle>
-                        <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
-                          {activeReference.description}
-                        </CardDescription>
-                      </div>
-                      <Button variant="ghost" size="sm" onClick={() => setActiveReference(null)}>
-                        Back to Chat
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="overflow-auto pb-6">
-                    <div className={`prose max-w-none ${isEmergencyMode ? 'prose-invert' : ''}`}>
-                      <div className="markdown-content">
-                        {activeReference.content.split('\n').map((line, i) => {
-                          if (line.startsWith('# ')) {
-                            return <h1 key={i} className="text-xl font-bold mt-2 mb-4">{line.substring(2)}</h1>;
-                          } else if (line.startsWith('## ')) {
-                            return <h2 key={i} className="text-lg font-semibold mt-4 mb-2">{line.substring(3)}</h2>;
-                          } else if (line.startsWith('- ')) {
-                            return <li key={i} className="ml-4 my-1">{line.substring(2)}</li>;
-                          } else if (line.startsWith('| ')) {
-                            // This is a table row
-                            const cells = line.split('|').filter(cell => cell.trim() !== '');
-                            return (
-                              <div key={i} className="flex border-b dark:border-gray-700">
-                                {cells.map((cell, cellIndex) => (
-                                  <div 
-                                    key={cellIndex} 
-                                    className={`p-2 flex-1 ${i === 0 || line.includes('---') ? 'font-bold' : ''}`}
-                                  >
-                                    {cell.trim()}
-                                  </div>
-                                ))}
-                              </div>
-                            );
-                          } else if (line.trim() === '') {
-                            return <div key={i} className="h-4"></div>;
-                          } else {
-                            return <p key={i} className="my-2">{line}</p>;
-                          }
-                        })}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            ) : (
-              // Display chat when no reference is selected
-              <div className="lg:col-span-2">
-                <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'} h-[calc(100vh-14rem)]`}>
+            <div className="lg:col-span-2">
+              {activeReference ? (
+                <QuickReference 
+                  reference={activeReference} 
+                  onBack={() => setActiveReference(null)} 
+                />
+              ) : (
+                <Card className="bg-white h-[calc(100vh-14rem)]">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Book className="h-5 w-5 text-purple-500" />
                       Regulatory Assistant Chat
                     </CardTitle>
-                    <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                    <CardDescription className="text-gray-600">
                       Ask in plain English about water regulations and compliance
                     </CardDescription>
                   </CardHeader>
-                  <WaterChatbot isEmergencyMode={isEmergencyMode} />
+                  <WaterChatbot />
                 </Card>
-              </div>
-            )}
+              )}
+            </div>
             
             <div className="space-y-6">
-              <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-green-500" />
-                    Compliance Tools
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Button 
-                    className="w-full flex items-center justify-start gap-2"
-                    onClick={handleComplianceReport}
-                  >
-                    <FileCheck className="h-4 w-4" />
-                    Generate Compliance Report
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="w-full flex items-center justify-start gap-2"
-                    onClick={handleRiskAssessment}
-                  >
-                    <AlertTriangle className="h-4 w-4" />
-                    Risk Assessment
-                  </Button>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="w-full flex items-center justify-start gap-2"
-                    onClick={handleRegulatoryCrossCheck}
-                  >
-                    <Scale className="h-4 w-4" />
-                    Regulatory Cross-Check
-                  </Button>
-                </CardContent>
-              </Card>
+              <ComplianceTools />
               
-              <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
+              <Card className="bg-white">
                 <CardHeader>
                   <CardTitle>Quick References</CardTitle>
                 </CardHeader>
@@ -325,17 +191,17 @@ New microplastic monitoring requirements added in 2022 amendment`
                     {quickReferences.map((reference, index) => (
                       <div 
                         key={index}
-                        className={`p-3 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'} border ${isEmergencyMode ? 'border-gray-800' : 'border-gray-200'} cursor-pointer hover:bg-opacity-80`}
+                        className="p-3 rounded bg-gray-50 border border-gray-200 cursor-pointer hover:bg-opacity-80"
                         onClick={() => handleViewReference(reference)}
                       >
                         <p className="text-sm font-medium">{reference.title}</p>
-                        <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>{reference.description}</p>
+                        <p className="text-xs text-gray-500 mt-1">{reference.description}</p>
                       </div>
                     ))}
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <p className={`text-xs italic ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className="text-xs italic text-gray-500">
                     "Avoid million-dollar fines—let AI be your water lawyer"
                   </p>
                 </CardFooter>
@@ -344,7 +210,7 @@ New microplastic monitoring requirements added in 2022 amendment`
           </div>
         </main>
       </div>
-      {isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+      {isMobile && <Sidebar />}
     </div>
   );
 };

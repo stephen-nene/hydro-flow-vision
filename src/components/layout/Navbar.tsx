@@ -1,6 +1,6 @@
-import { Bell, Menu, Settings, Sun, Moon, User, LogOut, HelpCircle, ChevronDown, Shield, FileText, AlertTriangle, Database, Activity, ArrowUpRight } from "lucide-react";
+
+import { Bell, Menu, Settings, User, LogOut, HelpCircle, ChevronDown, Shield, FileText, AlertTriangle, Database, Activity, ArrowUpRight, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -18,7 +18,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuPortal
 } from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   Dialog,
   DialogContent,
@@ -36,10 +36,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
-interface NavbarProps {
-  isEmergencyMode: boolean;
-  setIsEmergencyMode: (value: boolean) => void;
-}
+interface NavbarProps {}
 
 interface NotificationType {
   id: string;
@@ -51,7 +48,7 @@ interface NotificationType {
   type: 'system' | 'alert' | 'update' | 'maintenance' | 'security';
 }
 
-export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
+export function Navbar({}: NavbarProps) {
   const [notificationsCount, setNotificationsCount] = useState(5);
   const [notifications, setNotifications] = useState<NotificationType[]>([
     {
@@ -107,10 +104,23 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
   const [activeProfileTab, setActiveProfileTab] = useState("account");
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setNotificationsCount(notifications.filter(n => !n.read).length);
-  }, [notifications]);
+    
+    const hasCriticalAlert = notifications.some(
+      n => n.priority === 'high' && n.type === 'alert' && !n.read
+    );
+    
+    if (hasCriticalAlert) {
+      toast({
+        title: "Critical Alert",
+        description: "Critical water quality alert detected.",
+        variant: "destructive"
+      });
+    }
+  }, [notifications, toast]);
 
   const markAllAsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
@@ -197,14 +207,18 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
     });
   };
 
+  const handleProfileClick = () => {
+    navigate("/profile");
+  };
+
   return (
-    <div className={`sticky top-0 z-50 w-full border-b ${isEmergencyMode ? 'bg-black/90 border-water-danger/30' : 'bg-white/90 border-water-light'} backdrop-blur-sm`}>
+    <div className="sticky top-0 z-50 w-full border-b bg-white/90 border-water-light backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex items-center justify-center overflow-hidden rounded-full h-8 w-8 bg-water-dark">
             <span className="font-semibold text-white">H</span>
           </div>
-          <span className={`font-semibold text-xl ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
+          <span className="font-semibold text-xl text-water-dark">
             Hydra
           </span>
         </div>
@@ -218,38 +232,18 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                   size="icon" 
                   className="md:hidden"
                 >
-                  <Menu className={isEmergencyMode ? "text-water-danger" : "text-water-dark"} />
+                  <Menu className="text-water-dark" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent 
                 align="end" 
-                className={`w-64 p-2 ${isEmergencyMode ? 'bg-black text-white border-water-danger/30' : 'bg-white text-gray-800 border-water-light'}`}
+                className="w-64 p-2 bg-white text-gray-800 border-water-light"
                 style={{ maxHeight: '90vh', overflowY: 'auto' }}
               >
-                <div className="mb-3 px-2">
-                  <ToggleGroup type="single" value={isEmergencyMode ? "dark" : "light"} 
-                    onValueChange={(value) => {
-                      if (value === "dark" || value === "light") {
-                        setIsEmergencyMode(value === "dark");
-                      }
-                    }}
-                    className="w-full flex justify-center"
-                  >
-                    <ToggleGroupItem value="light" aria-label="Light Mode" className="flex-1 data-[state=on]:bg-water-light data-[state=on]:text-water-dark">
-                      <Sun className="h-4 w-4 mr-2" />
-                      Light Mode
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="dark" aria-label="Dark Mode" className="flex-1 data-[state=on]:bg-water-danger data-[state=on]:text-white">
-                      <Moon className="h-4 w-4 mr-2" />
-                      Dark Mode
-                    </ToggleGroupItem>
-                  </ToggleGroup>
-                </div>
-                
-                <div className="flex justify-between items-center px-2 py-3 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-center px-2 py-3 border-b border-gray-200">
                   <div className="flex items-center gap-2">
-                    <Bell className={isEmergencyMode ? "text-water-danger" : "text-water-dark"} />
-                    <span className={`text-sm ${isEmergencyMode ? 'text-gray-400' : 'text-gray-600'}`}>Notifications</span>
+                    <Bell className="text-water-dark" />
+                    <span className="text-sm text-gray-600">Notifications</span>
                   </div>
                   {notificationsCount > 0 && (
                     <Badge variant="destructive" className="bg-water-danger">
@@ -260,41 +254,41 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                 
                 <div className="flex flex-col w-full">
                   <Link to="/" onClick={() => setIsMenuOpen(false)}>
-                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                    <DropdownMenuItem className="hover:bg-water-light/50">
                       Dashboard
                     </DropdownMenuItem>
                   </Link>
                   
                   <Link to="/water-samples" onClick={() => setIsMenuOpen(false)}>
-                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                    <DropdownMenuItem className="hover:bg-water-light/50">
                       Water Samples
                     </DropdownMenuItem>
                   </Link>
                   
                   <Link to="/treatment-simulator" onClick={() => setIsMenuOpen(false)}>
-                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                    <DropdownMenuItem className="hover:bg-water-light/50">
                       Treatment Simulator
                     </DropdownMenuItem>
                   </Link>
                   
                   <Link to="/reports" onClick={() => setIsMenuOpen(false)}>
-                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                    <DropdownMenuItem className="hover:bg-water-light/50">
                       AI Reports
                     </DropdownMenuItem>
                   </Link>
                   
                   <Link to="/ai-chatbot" onClick={() => setIsMenuOpen(false)}>
-                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                    <DropdownMenuItem className="hover:bg-water-light/50">
                       AI Chatbot
                     </DropdownMenuItem>
                   </Link>
                 </div>
                 
-                <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2 flex justify-between items-center px-2">
+                <div className="border-t border-gray-200 mt-2 pt-2 flex justify-between items-center px-2">
                   <div className="flex items-center gap-2">
-                    <Settings className={isEmergencyMode ? "text-gray-400" : "text-gray-600"} />
+                    <Settings className="text-gray-600" />
                     <Link to="/settings" onClick={() => setIsMenuOpen(false)}>
-                      <span className={`text-sm ${isEmergencyMode ? 'text-gray-400' : 'text-gray-600'}`}>Settings</span>
+                      <span className="text-sm text-gray-600">Settings</span>
                     </Link>
                   </div>
                   
@@ -310,25 +304,10 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
           </div>
         ) : (
           <div className="flex items-center gap-6">
-            <ToggleGroup type="single" value={isEmergencyMode ? "dark" : "light"} onValueChange={(value) => {
-              if (value === "dark" || value === "light") {
-                setIsEmergencyMode(value === "dark");
-              }
-            }}>
-              <ToggleGroupItem value="light" aria-label="Light Mode" className="data-[state=on]:bg-water-light data-[state=on]:text-water-dark">
-                <Sun className="h-4 w-4 mr-2" />
-                Light Mode
-              </ToggleGroupItem>
-              <ToggleGroupItem value="dark" aria-label="Dark Mode" className="data-[state=on]:bg-water-danger data-[state=on]:text-white">
-                <Moon className="h-4 w-4 mr-2" />
-                Dark Mode
-              </ToggleGroupItem>
-            </ToggleGroup>
-
             <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
-                  <Bell className={isEmergencyMode ? "text-water-danger" : "text-water-dark"} />
+                  <Bell className="text-water-dark" />
                   {notificationsCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-water-danger text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {notificationsCount}
@@ -349,7 +328,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                 <div className="max-h-[300px] overflow-y-auto">
                   {notifications.length > 0 ? (
                     notifications.map((notification) => (
-                      <div key={notification.id} className="px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
+                      <div key={notification.id} className="px-2 py-2 hover:bg-gray-100">
                         <div className="flex items-start gap-2">
                           <div className="mt-1">{getTypeIcon(notification.type)}</div>
                           <div className="flex-1 min-w-0">
@@ -370,7 +349,10 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                             <p className="text-xs text-gray-500 mb-1 truncate">{notification.description}</p>
                             <div className="flex justify-between items-center">
                               <span className="text-xs text-gray-400">{notification.time}</span>
-                              <Badge variant="outline" className={`text-xs ${getPriorityColor(notification.priority)}`}>
+                              <Badge
+                                variant="outline"
+                                className={`text-xs ${getPriorityColor(notification.priority)}`}
+                              >
                                 {notification.priority}
                               </Badge>
                             </div>
@@ -423,7 +405,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Settings className={isEmergencyMode ? "text-gray-400" : "text-gray-600"} />
+                  <Settings className="text-gray-600" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -470,15 +452,11 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => {
-                  toast({
-                    title: "Help & Documentation",
-                    description: "Opening documentation in a new tab",
-                  });
-                  window.open("#", "_blank");
-                }}>
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  <span>Help & Documentation</span>
+                <DropdownMenuItem asChild>
+                  <Link to="/settings/help">
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    <span>Help & Documentation</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-water-danger" onClick={handleLogout}>
@@ -490,9 +468,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
 
             <Avatar 
               className="cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => {
-                window.location.href = "/profile";
-              }}
+              onClick={handleProfileClick}
             >
               <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" />
               <AvatarFallback>JD</AvatarFallback>

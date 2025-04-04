@@ -3,8 +3,6 @@
 
 Hydra is a comprehensive web-based platform for water quality management, monitoring, analysis, and compliance. This AI-powered system helps water treatment professionals identify, analyze, and resolve water quality issues efficiently.
 
-![Hydra Platform](https://github.com/your-repo/hydra/raw/main/screenshots/dashboard.png)
-
 ## Core Features & Components
 
 ### 🔍 AI-Powered Analytics
@@ -28,9 +26,15 @@ Hydra is a comprehensive web-based platform for water quality management, monito
 - **Voice Commands:** Hands-free operation for field technicians with NLP processing
 
 ### 🚨 Emergency Mode
-- Switch to high-visibility emergency interface for critical situations
+- Automatic switch to high-visibility emergency interface for critical situations
 - Prominent alerts and streamlined workflows for rapid response
 - Automated emergency response protocols and team notifications
+
+### ⚙️ System Settings
+- **Appearance:** Customize UI theme, density and accessibility options
+- **Security & Privacy:** Advanced authentication options and data protection controls
+- **Integrations:** Connect with ERP, IoT, analytics and reporting systems
+- **Data Management:** Configure storage, backup, retention and destruction policies
 
 ## Technical Documentation
 
@@ -49,7 +53,9 @@ src/
 │   │   ├── CameraView.tsx   # AR camera functionality
 │   │   └── AROverlay.tsx    # AR data overlay
 │   ├── chatbot/             # AI assistant components
-│   │   └── WaterChatbot.tsx # Natural language water assistant
+│   │   ├── WaterChatbot.tsx # Natural language water assistant
+│   │   ├── ComplianceTools.tsx # Compliance tools & utilities
+│   │   └── QuickReference.tsx # Reference material viewer
 │   ├── simulator/           # Treatment simulation components
 │   │   └── TreatmentSimulator.tsx # Water treatment simulator
 │   ├── reports/             # Reporting components
@@ -59,6 +65,21 @@ src/
 │       ├── Navbar.tsx       # Application navigation
 │       └── Sidebar.tsx      # Sidebar navigation and tools
 ├── pages/                   # Application pages
+│   ├── Index.tsx            # Dashboard/home page
+│   ├── WaterSamples.tsx     # Water sample management
+│   ├── TreatmentSimulator.tsx # Treatment simulation
+│   ├── Reports.tsx          # Report generation & viewing
+│   ├── AIChatbot.tsx        # AI regulatory assistant
+│   ├── Profile.tsx          # User profile management
+│   ├── Settings.tsx         # Main settings hub
+│   ├── settings/            # Individual settings pages
+│   │   ├── AccountSettings.tsx # Account management
+│   │   ├── NotificationSettings.tsx # Notification preferences
+│   │   ├── AppearanceSettings.tsx # UI customization
+│   │   ├── SecuritySettings.tsx # Security & privacy
+│   │   ├── IntegrationsSettings.tsx # External integrations
+│   │   ├── DataManagementSettings.tsx # Data handling
+│   │   └── HelpDocumentation.tsx # Help & support
 ├── hooks/                   # Custom React hooks
 ├── data/                    # Data models and mock data
 └── types/                   # TypeScript type definitions
@@ -67,15 +88,37 @@ src/
 #### State Management
 - **Context API:** User preferences, theme settings, and global configurations
 - **React Query:** Data fetching, caching, and real-time updates
-- **Zustand/Redux:** Optional state management for complex state requirements
 - **Local Storage:** Persistent user settings and authentication tokens
 
 #### UI/UX Framework
 - **Tailwind CSS:** Utility-first styling for responsive design
 - **Shadcn UI:** Component library for consistent design language
-- **Framer Motion:** Smooth animations and transitions for data visualization
 - **Recharts:** Dynamic and responsive chart components for water quality metrics
 - **Lucide Icons:** SVG icon system for consistent visual language
+
+### Emergency Mode System
+
+The platform includes an intelligent emergency response system:
+
+1. **Automatic Detection:**
+   - Monitors water quality metrics in real-time
+   - Analyzes notification priority and type
+   - Automatically activates emergency mode when critical alerts are detected
+
+2. **Visual Transformation:**
+   - Shifts UI to high-contrast dark mode with red accents
+   - Highlights critical information and alerts
+   - Reduces visual clutter to focus on emergency response elements
+
+3. **Operational Changes:**
+   - Prioritizes emergency-related features and workflows
+   - Provides one-click access to critical response tools
+   - Automatically notifies relevant team members
+
+4. **Configuration:**
+   - Can be manually toggled via the light/dark mode control
+   - Configurable sensitivity in Appearance Settings
+   - Supports automatic deactivation when crisis resolves
 
 ### Backend Integration Points
 
@@ -91,6 +134,8 @@ The frontend expects the following API endpoints:
 /api/v1/treatments          # Treatment simulation endpoints
 /api/v1/compliance          # Regulatory compliance endpoints
 /api/v1/ar-data             # AR data endpoints
+/api/v1/integrations        # External system connections
+/api/v1/settings            # User and system settings
 ```
 
 #### WebSocket Integration
@@ -106,6 +151,7 @@ socket.onmessage = (event) => {
   switch (data.type) {
     case 'alert':
       // Handle new water quality alert
+      // Potentially trigger emergency mode
       break;
     case 'sample':
       // Handle new water sample data
@@ -127,6 +173,7 @@ The application uses OAuth 2.0 with JWT for authentication:
 3. Token refresh through `/api/v1/auth/refresh`
 4. Token validation for protected routes
 5. Role-based access control for different user types
+6. Optional two-factor authentication for enhanced security
 
 ### AI/ML Integration Requirements
 
@@ -162,6 +209,20 @@ The frontend interfaces with several AI/ML models that should be developed by th
    - **Expected Performance:** ≤ 1s response time, ≥ 85% accuracy on domain-specific queries
    - **API Endpoint:** `/api/v1/chatbot/query`
 
+5. **Risk Assessment Model**
+   - **Input:** Water quality parameters, historical patterns, environmental conditions
+   - **Output:** Risk scores, categorization (high/medium/low), impact areas, recommendations
+   - **Recommended Architecture:** Ensemble methods combining multiple predictive models
+   - **Expected Accuracy:** ≥ 80% for risk level prediction
+   - **API Endpoint:** `/api/v1/compliance/risk-assessment`
+
+6. **Regulatory Compliance Analysis**
+   - **Input:** Water quality parameters, sample metadata
+   - **Output:** Compliance status across multiple regulatory frameworks, violation details
+   - **Recommended Architecture:** Rule-based system with ML enhancement
+   - **Expected Accuracy:** ≥ 95% for regulatory determination
+   - **API Endpoint:** `/api/v1/compliance/cross-check`
+
 #### Model Training Requirements
 
 For optimal integration with the frontend, the ML team should consider:
@@ -185,6 +246,11 @@ For optimal integration with the frontend, the ML team should consider:
 5. **Data Schema:**
    - Consistent data schema between training and inference
    - Well-documented input/output formats for frontend integration
+
+6. **Emergency Detection:**
+   - Special focus on models that detect critical water quality issues
+   - High precision for emergency alerts to minimize false alarms
+   - Support for confidence thresholds to trigger emergency mode
 
 ### ERP System Integration
 
@@ -300,11 +366,17 @@ The platform is designed to receive data from various IoT sensors and devices:
 - **RBAC:** Role-based permissions with principle of least privilege
 - **API Security:** Rate limiting, payload validation, and OWASP protection
 - **Device Security:** Certificate-based authentication for IoT devices
+- **Two-Factor Authentication:** Multiple 2FA methods including app, SMS, and email
 
 #### Compliance
 - **Audit Trails:** Comprehensive logging of all system interactions
 - **Data Retention:** Configurable policies based on regulatory requirements
 - **Regulatory Standards:** GDPR, CCPA, and water industry regulations
+
+#### Emergency Response
+- **Critical Alert Handling:** Special security protocols during emergencies
+- **Elevated Access:** Temporary permission elevation for emergency responders
+- **Audit Records:** Enhanced logging during emergency mode
 
 ## Development & Deployment
 
@@ -353,10 +425,11 @@ The recommended CI/CD workflow includes:
 - **API Documentation:** Interactive API reference at [api.hydra-water.com/docs](https://api.hydra-water.com/docs)
 - **Integration Guides:** Step-by-step guides for backend, ML, and ERP integration
 - **User Guides:** Role-based documentation for different platform users
+- **In-App Help:** Contextual help and documentation available in all platform areas
 
 ## License
 This project is proprietary and confidential.
-© 2023 Hydra Water Technologies
+© 2025 Hydra Water Technologies
 
 ## Contact
 For technical questions or support, contact: dev-support@hydra-water.com

@@ -12,15 +12,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { TreatmentSimulator as TreatmentSimulatorComponent } from "@/components/simulator/TreatmentSimulator";
 
 const TreatmentSimulator = () => {
-  const [isEmergencyMode, setIsEmergencyMode] = useState(false);
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState<"filtration" | "chemical" | "biological">("filtration");
 
   return (
-    <div className={`min-h-screen ${isEmergencyMode ? 'emergency-mode' : ''}`}>
-      <Navbar isEmergencyMode={isEmergencyMode} setIsEmergencyMode={setIsEmergencyMode} />
+    <div className="min-h-screen">
+      <Navbar />
       <div className="flex">
-        {!isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+        {!isMobile && <Sidebar />}
         <main className="flex-1 p-4 md:p-6">
           <Breadcrumb className="mb-4 md:mb-6">
             <BreadcrumbList>
@@ -38,66 +37,66 @@ const TreatmentSimulator = () => {
           </Breadcrumb>
           
           <header className="mb-6">
-            <h1 className={`text-2xl md:text-3xl font-bold ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
+            <h1 className="text-2xl md:text-3xl font-bold text-water-dark">
               Treatment Simulator
             </h1>
-            <p className={`text-base md:text-lg ${isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className="text-base md:text-lg text-gray-600">
               AI-driven simulation and HydraScore analytics for treatment effectiveness
             </p>
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
+            <Card className="bg-white">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Database className="h-5 w-5 text-indigo-500" />
                   HydraScore Analytics
                 </CardTitle>
-                <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                <CardDescription className="text-gray-600">
                   AI-generated water quality scores to prioritize clients
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className={`p-3 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+                  <div className="p-3 rounded bg-gray-50">
                     <div className="flex justify-between items-center mb-2">
                       <div className="flex items-center gap-2">
                         <School className="h-4 w-4 text-amber-500" />
                         <span className="font-medium">Central Public School</span>
                       </div>
-                      <div className={`text-xl font-bold ${parseInt('30') < 50 ? 'text-red-500' : 'text-emerald-500'}`}>30</div>
+                      <div className="text-xl font-bold text-red-500">30</div>
                     </div>
-                    <Progress value={30} className={`h-2 ${isEmergencyMode ? 'bg-gray-800' : 'bg-gray-200'}`} />
+                    <Progress value={30} className="h-2 bg-gray-200" />
                     <div className="mt-2 text-xs text-right text-red-500">Critical: Lead levels exceed safety standards</div>
                   </div>
                   
-                  <div className={`p-3 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+                  <div className="p-3 rounded bg-gray-50">
                     <div className="flex justify-between items-center mb-2">
                       <div className="flex items-center gap-2">
                         <Building className="h-4 w-4 text-blue-500" />
                         <span className="font-medium">Westside Hospital</span>
                       </div>
-                      <div className={`text-xl font-bold ${parseInt('68') < 50 ? 'text-red-500' : 'text-emerald-500'}`}>68</div>
+                      <div className="text-xl font-bold text-emerald-500">68</div>
                     </div>
-                    <Progress value={68} className={`h-2 ${isEmergencyMode ? 'bg-gray-800' : 'bg-gray-200'}`} />
+                    <Progress value={68} className="h-2 bg-gray-200" />
                     <div className="mt-2 text-xs text-right text-amber-500">Moderate: Consider filtration upgrade</div>
                   </div>
                   
-                  <div className={`p-3 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+                  <div className="p-3 rounded bg-gray-50">
                     <div className="flex justify-between items-center mb-2">
                       <div className="flex items-center gap-2">
                         <Users className="h-4 w-4 text-purple-500" />
                         <span className="font-medium">Riverfront Community</span>
                       </div>
-                      <div className={`text-xl font-bold ${parseInt('85') < 50 ? 'text-red-500' : 'text-emerald-500'}`}>85</div>
+                      <div className="text-xl font-bold text-emerald-500">85</div>
                     </div>
-                    <Progress value={85} className={`h-2 ${isEmergencyMode ? 'bg-gray-800' : 'bg-gray-200'}`} />
+                    <Progress value={85} className="h-2 bg-gray-200" />
                     <div className="mt-2 text-xs text-right text-emerald-500">Good: Regular maintenance required</div>
                   </div>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <p className={`text-sm italic ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                <p className="text-sm italic text-gray-500">
                   "Your sales team will chase the right clients like bloodhounds"
                 </p>
                 
@@ -105,13 +104,13 @@ const TreatmentSimulator = () => {
               </CardFooter>
             </Card>
             
-            <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
+            <Card className="bg-white">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <AreaChart className="h-5 w-5 text-emerald-500" />
                   Treatment Effectiveness
                 </CardTitle>
-                <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                <CardDescription className="text-gray-600">
                   Simulate different water treatment methods and analyze results
                 </CardDescription>
               </CardHeader>
@@ -124,15 +123,15 @@ const TreatmentSimulator = () => {
                   </TabsList>
                   
                   <TabsContent value="filtration" className="mt-4">
-                    <TreatmentSimulatorComponent treatmentType="filtration" isEmergencyMode={isEmergencyMode} />
+                    <TreatmentSimulatorComponent treatmentType="filtration" />
                   </TabsContent>
                   
                   <TabsContent value="chemical" className="mt-4">
-                    <TreatmentSimulatorComponent treatmentType="chemical" isEmergencyMode={isEmergencyMode} />
+                    <TreatmentSimulatorComponent treatmentType="chemical" />
                   </TabsContent>
                   
                   <TabsContent value="biological" className="mt-4">
-                    <TreatmentSimulatorComponent treatmentType="biological" isEmergencyMode={isEmergencyMode} />
+                    <TreatmentSimulatorComponent treatmentType="biological" />
                   </TabsContent>
                 </Tabs>
               </CardContent>
@@ -144,13 +143,13 @@ const TreatmentSimulator = () => {
             </Card>
           </div>
           
-          <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
+          <Card className="bg-white">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-blue-500" />
                 Long-Term Impact Analysis
               </CardTitle>
-              <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+              <CardDescription className="text-gray-600">
                 See water quality improvement over 1, 5, and 10 years
               </CardDescription>
             </CardHeader>
@@ -162,7 +161,7 @@ const TreatmentSimulator = () => {
           </Card>
         </main>
       </div>
-      {isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+      {isMobile && <Sidebar />}
     </div>
   );
 };

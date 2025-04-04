@@ -7,10 +7,9 @@ import { toast } from "@/components/ui/use-toast";
 
 interface TreatmentSimulatorProps {
   treatmentType: "filtration" | "chemical" | "biological";
-  isEmergencyMode: boolean;
 }
 
-export const TreatmentSimulator = ({ treatmentType, isEmergencyMode }: TreatmentSimulatorProps) => {
+export const TreatmentSimulator = ({ treatmentType }: TreatmentSimulatorProps) => {
   const [isSimulating, setIsSimulating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [efficiency, setEfficiency] = useState(0);
@@ -63,7 +62,7 @@ export const TreatmentSimulator = ({ treatmentType, isEmergencyMode }: Treatment
           toast({
             title: "Simulation complete",
             description: `${treatmentType.charAt(0).toUpperCase() + treatmentType.slice(1)} treatment achieved ${efficiency}% efficiency`,
-            variant: isEmergencyMode ? "destructive" : "default",
+            variant: "default",
           });
         }
         
@@ -174,28 +173,28 @@ export const TreatmentSimulator = ({ treatmentType, isEmergencyMode }: Treatment
       </div>
       
       <div className="grid grid-cols-3 gap-2">
-        <div className={`p-2 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className="p-2 rounded bg-gray-50">
           <div className="flex justify-between mb-1">
             <span className="text-xs">Efficiency</span>
             <span className="text-xs font-medium">{getEfficiencyLabel()}</span>
           </div>
-          <Progress value={efficiency} className={`h-1.5 ${isEmergencyMode ? 'bg-gray-800' : 'bg-gray-200'}`} />
+          <Progress value={efficiency} className="h-1.5 bg-gray-200" />
         </div>
         
-        <div className={`p-2 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className="p-2 rounded bg-gray-50">
           <div className="flex justify-between mb-1">
             <span className="text-xs">Maintenance</span>
             <span className="text-xs font-medium">{getMaintenanceLabel()}</span>
           </div>
-          <Progress value={maintenance} className={`h-1.5 ${isEmergencyMode ? 'bg-gray-800' : 'bg-gray-200'}`} />
+          <Progress value={maintenance} className="h-1.5 bg-gray-200" />
         </div>
         
-        <div className={`p-2 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className="p-2 rounded bg-gray-50">
           <div className="flex justify-between mb-1">
             <span className="text-xs">Cost</span>
             <span className="text-xs font-medium">{getCostLabel()}</span>
           </div>
-          <Progress value={cost} className={`h-1.5 ${isEmergencyMode ? 'bg-gray-800' : 'bg-gray-200'}`} />
+          <Progress value={cost} className="h-1.5 bg-gray-200" />
         </div>
       </div>
       

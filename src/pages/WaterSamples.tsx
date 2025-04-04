@@ -11,7 +11,6 @@ import { CameraView } from "@/components/ar/CameraView";
 import { useToast } from "@/components/ui/use-toast";
 
 const WaterSamples = () => {
-  const [isEmergencyMode, setIsEmergencyMode] = useState(false);
   const isMobile = useIsMobile();
   const [showCamera, setShowCamera] = useState(false);
   const [showMap, setShowMap] = useState(false);
@@ -34,10 +33,10 @@ const WaterSamples = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isEmergencyMode ? 'emergency-mode' : ''}`}>
-      <Navbar isEmergencyMode={isEmergencyMode} setIsEmergencyMode={setIsEmergencyMode} />
+    <div className="min-h-screen">
+      <Navbar />
       <div className="flex">
-        {!isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+        {!isMobile && <Sidebar />}
         <main className="flex-1 p-4 md:p-6">
           <Breadcrumb className="mb-4 md:mb-6">
             <BreadcrumbList>
@@ -55,21 +54,21 @@ const WaterSamples = () => {
           </Breadcrumb>
           
           <header className="mb-6">
-            <h1 className={`text-2xl md:text-3xl font-bold ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
+            <h1 className="text-2xl md:text-3xl font-bold text-water-dark">
               AR Field Assistant
             </h1>
-            <p className={`text-base md:text-lg ${isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className="text-base md:text-lg text-gray-600">
               Augmented reality tools for on-site water assessment
             </p>
           </header>
 
-          <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'} mb-6`}>
+          <Card className="bg-white mb-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Camera className="h-5 w-5 text-emerald-500" />
                 HYDRA Lens Mobile Mode
               </CardTitle>
-              <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+              <CardDescription className="text-gray-600">
                 Point your device at water sources to analyze and assess in real-time
               </CardDescription>
             </CardHeader>
@@ -90,7 +89,7 @@ const WaterSamples = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+                <Card className="bg-gray-50 border-gray-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium flex items-center gap-1">
                       <Sparkles className="h-4 w-4 text-blue-500" />
@@ -98,13 +97,13 @@ const WaterSamples = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <p className="text-xs text-gray-500">
                       AI identifies potential contaminants before lab tests
                     </p>
                   </CardContent>
                 </Card>
                 
-                <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+                <Card className="bg-gray-50 border-gray-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium flex items-center gap-1">
                       <PenTool className="h-4 w-4 text-green-500" />
@@ -112,13 +111,13 @@ const WaterSamples = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <p className="text-xs text-gray-500">
                       3D arrows guide filter and pipe installation
                     </p>
                   </CardContent>
                 </Card>
                 
-                <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+                <Card className="bg-gray-50 border-gray-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium flex items-center gap-1">
                       <Layers className="h-4 w-4 text-purple-500" />
@@ -126,7 +125,7 @@ const WaterSamples = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <p className="text-xs text-gray-500">
                       See underground pipes with GIS integration
                     </p>
                   </CardContent>
@@ -134,7 +133,7 @@ const WaterSamples = () => {
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <p className={`text-sm italic ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <p className="text-sm italic text-gray-500">
                 "Cut site visits by 70%—diagnose water through a phone camera"
               </p>
               
@@ -145,16 +144,16 @@ const WaterSamples = () => {
             </CardFooter>
           </Card>
           
-          <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
+          <Card className="bg-white">
             <CardHeader>
               <CardTitle>Water Sample Database</CardTitle>
-              <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+              <CardDescription className="text-gray-600">
                 View and analyze collected water samples across all monitoring stations
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+                <Card className="bg-gray-50 border-gray-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium flex items-center gap-1">
                       <Map className="h-4 w-4 text-blue-500" />
@@ -176,23 +175,23 @@ const WaterSamples = () => {
                           loading="lazy"
                         ></iframe>
                       ) : (
-                        <p className={`text-xs text-white`}>Click to View Interactive Map</p>
+                        <p className="text-xs text-white">Click to View Interactive Map</p>
                       )}
                     </div>
                   </CardContent>
                 </Card>
                 
-                <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+                <Card className="bg-gray-50 border-gray-200">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium">Recent Samples</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
                       {[1, 2, 3].map((i) => (
-                        <div key={i} className={`p-2 rounded ${isEmergencyMode ? 'bg-black' : 'bg-white'} border ${isEmergencyMode ? 'border-gray-800' : 'border-gray-200'} cursor-pointer hover:bg-opacity-80`}>
+                        <div key={i} className="p-2 rounded bg-white border border-gray-200 cursor-pointer hover:bg-opacity-80">
                           <div className="flex justify-between items-center">
-                            <span className={`text-xs font-medium ${isEmergencyMode ? 'text-white' : 'text-gray-900'}`}>Sample #{i}0{Math.floor(Math.random() * 9) + 1}</span>
-                            <span className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>{new Date().toLocaleDateString()}</span>
+                            <span className="text-xs font-medium text-gray-900">Sample #{i}0{Math.floor(Math.random() * 9) + 1}</span>
+                            <span className="text-xs text-gray-500">{new Date().toLocaleDateString()}</span>
                           </div>
                         </div>
                       ))}
@@ -204,11 +203,11 @@ const WaterSamples = () => {
           </Card>
         </main>
       </div>
-      {isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+      {isMobile && <Sidebar />}
       
       {/* Camera AR View Modal */}
       {showCamera && (
-        <CameraView onClose={handleCloseCamera} isEmergencyMode={isEmergencyMode} />
+        <CameraView onClose={handleCloseCamera} />
       )}
     </div>
   );

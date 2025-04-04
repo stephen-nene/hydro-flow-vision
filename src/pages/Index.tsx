@@ -57,7 +57,6 @@ const featuresList = [
 ];
 
 const Index = () => {
-  const [isEmergencyMode, setIsEmergencyMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const isMobile = useIsMobile();
   const { toast } = useToast();
@@ -83,10 +82,10 @@ const Index = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isEmergencyMode ? 'emergency-mode' : ''}`}>
-      <Navbar isEmergencyMode={isEmergencyMode} setIsEmergencyMode={setIsEmergencyMode} />
+    <div className="min-h-screen">
+      <Navbar />
       <div className="flex">
-        {!isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+        {!isMobile && <Sidebar />}
         <main className="flex-1 p-4 md:p-6">
           <Breadcrumb className="mb-4 md:mb-6">
             <BreadcrumbList>
@@ -106,11 +105,11 @@ const Index = () => {
             </div>
           ) : (
             <>
-              <WaterDashboard isEmergencyMode={isEmergencyMode} />
+              <WaterDashboard />
               
               <section className="mt-8">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className={`text-2xl font-bold ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
+                  <h2 className="text-2xl font-bold text-water-dark">
                     AI-Powered Solutions
                   </h2>
                   <Button variant="outline" size="sm" asChild>
@@ -127,7 +126,7 @@ const Index = () => {
                       className="animate-fade-in"
                       style={{ animationDelay: `${index * 100}ms` }}
                     >
-                      <Card className={`h-full overflow-hidden border transition-all duration-300 hover:shadow-md ${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white border-water-light/80'}`}>
+                      <Card className="h-full overflow-hidden border transition-all duration-300 hover:shadow-md bg-white border-water-light/80">
                         <CardHeader className="flex flex-row items-center gap-3">
                           <div className={`${feature.color} text-white p-2 rounded-md`}>
                             <feature.icon className="h-5 w-5" />
@@ -137,7 +136,7 @@ const Index = () => {
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                          <CardDescription className="text-gray-600">
                             {feature.description}
                           </CardDescription>
                         </CardContent>
@@ -145,7 +144,6 @@ const Index = () => {
                           <Button 
                             asChild 
                             variant="outline" 
-                            className={isEmergencyMode ? 'border-water-danger/30 hover:bg-water-danger/10' : ''}
                             onClick={() => handleFeatureClick(feature.title)}
                           >
                             <Link to={feature.link}>Explore</Link>
@@ -160,7 +158,7 @@ const Index = () => {
           )}
         </main>
       </div>
-      {isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+      {isMobile && <Sidebar />}
     </div>
   );
 };
