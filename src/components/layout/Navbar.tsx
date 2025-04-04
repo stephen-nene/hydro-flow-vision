@@ -1,11 +1,10 @@
-import { Bell, Menu, Settings, Sun, Moon, User, LogOut, HelpCircle, ChevronDown, Shield, FileText, AlertTriangle, Database, Activity, ArrowUpRight, Monitor } from "lucide-react";
+import { Bell, Menu, Settings, User, LogOut, HelpCircle, ChevronDown, Shield, FileText, AlertTriangle, Database, Activity, ArrowUpRight, Monitor, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
-import { useTheme } from "@/components/ThemeProvider";
 import { 
   DropdownMenu,
   DropdownMenuContent,
@@ -247,39 +246,6 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                 style={{ maxHeight: '90vh', overflowY: 'auto' }}
               >
                 <div className="mb-3 px-2">
-                  <div className="mb-4">
-                    <Label className="text-sm font-medium mb-1 block">Theme</Label>
-                    <div className="grid grid-cols-3 gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setTheme("light")}
-                        className={`flex items-center justify-center ${theme === "light" ? "bg-water-light/50 border-water-dark" : ""}`}
-                      >
-                        <Sun className="h-4 w-4 mr-1" />
-                        Light
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setTheme("dark")}
-                        className={`flex items-center justify-center ${theme === "dark" ? "bg-gray-800 border-water-light" : ""}`}
-                      >
-                        <Moon className="h-4 w-4 mr-1" />
-                        Dark
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setTheme("system")}
-                        className={`flex items-center justify-center ${theme === "system" ? (isEmergencyMode ? "bg-gray-800 border-water-light" : "bg-water-light/50 border-water-dark") : ""}`}
-                      >
-                        <Monitor className="h-4 w-4 mr-1" />
-                        System
-                      </Button>
-                    </div>
-                  </div>
-                  
                   <Label className="text-sm font-medium mb-1 block">Emergency Mode</Label>
                   <ToggleGroup type="single" value={isEmergencyMode ? "dark" : "light"} 
                     onValueChange={(value) => {
@@ -364,36 +330,6 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
           </div>
         ) : (
           <div className="flex items-center gap-6">
-            <div className="flex items-center space-x-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme("light")}
-                className={theme === "light" ? "bg-water-light/50" : ""}
-              >
-                <Sun className="h-5 w-5" />
-                <span className="sr-only">Light Mode</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme("dark")}
-                className={theme === "dark" ? "bg-gray-800" : ""}
-              >
-                <Moon className="h-5 w-5" />
-                <span className="sr-only">Dark Mode</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme("system")}
-                className={theme === "system" ? (isEmergencyMode ? "bg-gray-800" : "bg-water-light/50") : ""}
-              >
-                <Monitor className="h-5 w-5" />
-                <span className="sr-only">System Mode</span>
-              </Button>
-            </div>
-
             <ToggleGroup type="single" value={isEmergencyMode ? "dark" : "light"} onValueChange={(value) => {
               if (value === "dark" || value === "light") {
                 setIsEmergencyMode(value === "dark");

@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import WaterSamples from "./pages/WaterSamples";
 import TreatmentSimulator from "./pages/TreatmentSimulator";
@@ -24,34 +23,32 @@ import HelpDocumentation from "./pages/settings/HelpDocumentation";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ThemeProvider defaultTheme="light">
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/water-samples" element={<WaterSamples />} />
-            <Route path="/treatment-simulator" element={<TreatmentSimulator />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/ai-chatbot" element={<AIChatbot />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/settings/account" element={<AccountSettings />} />
-            <Route path="/settings/notifications" element={<NotificationSettings />} />
-            <Route path="/settings/appearance" element={<AppearanceSettings />} />
-            <Route path="/settings/security" element={<SecuritySettings />} />
-            <Route path="/settings/integrations" element={<IntegrationsSettings />} />
-            <Route path="/settings/data" element={<DataManagementSettings />} />
-            <Route path="/settings/help" element={<HelpDocumentation />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ThemeProvider>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/water-samples" element={<WaterSamples />} />
+          <Route path="/treatment-simulator" element={<TreatmentSimulator />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/ai-chatbot" element={<AIChatbot />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/settings/account" element={<AccountSettings />} />
+          <Route path="/settings/notifications" element={<NotificationSettings />} />
+          <Route path="/settings/appearance" element={<AppearanceSettings />} />
+          <Route path="/settings/security" element={<SecuritySettings />} />
+          <Route path="/settings/integrations" element={<IntegrationsSettings />} />
+          <Route path="/settings/data" element={<DataManagementSettings />} />
+          <Route path="/settings/help" element={<HelpDocumentation />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;
