@@ -55,7 +55,7 @@ export function LiveAlerts({ alerts }: LiveAlertsProps) {
                   
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    <span>Detected {alert.timestamp}</span>
+                    <span>Detected {alert.timestamp || alert.collectionDate}</span>
                   </div>
                 </div>
               </div>

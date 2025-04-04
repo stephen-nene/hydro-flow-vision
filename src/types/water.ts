@@ -13,6 +13,8 @@ export interface WaterSample {
   collectionDate: string;
   contaminants: string[];
   metrics?: WaterMetrics;
+  timestamp?: string; // Adding the missing timestamp property
+  waterType?: string; // Adding the missing waterType property
 }
 
 export interface TreatmentMethod {

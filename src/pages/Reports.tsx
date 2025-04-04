@@ -13,15 +13,14 @@ import { CrisisPrediction } from "@/components/reports/CrisisPrediction";
 import { ComplianceReport } from "@/components/reports/ComplianceReport";
 
 interface WaterAutopsyVisualizationProps {
-  isEmergencyMode: boolean;
   files: File[];
 }
 
-const WaterAutopsyVisualization = ({ isEmergencyMode, files }: WaterAutopsyVisualizationProps) => {
+const WaterAutopsyVisualization = ({ files }: WaterAutopsyVisualizationProps) => {
   if (files.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className={isEmergencyMode ? 'text-gray-400' : 'text-gray-600'}>
+        <p className="text-gray-600">
           Upload water test results to generate 3D visualization
         </p>
       </div>
@@ -65,7 +64,7 @@ const WaterAutopsyVisualization = ({ isEmergencyMode, files }: WaterAutopsyVisua
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+        <Card className="bg-gray-50 border-gray-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-1">
               <div className="h-2 w-2 rounded-full bg-red-500"></div>
@@ -73,13 +72,13 @@ const WaterAutopsyVisualization = ({ isEmergencyMode, files }: WaterAutopsyVisua
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className="text-xs text-gray-500">
               Lead particles detected at 0.24ppm concentration (4.8x legal limit)
             </p>
           </CardContent>
         </Card>
         
-        <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+        <Card className="bg-gray-50 border-gray-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-1">
               <div className="h-2 w-2 rounded-full bg-green-500"></div>
@@ -87,13 +86,13 @@ const WaterAutopsyVisualization = ({ isEmergencyMode, files }: WaterAutopsyVisua
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className="text-xs text-gray-500">
               Ion Exchange Filter (HYD-F103) reduces lead to 0.01ppm
             </p>
           </CardContent>
         </Card>
         
-        <Card className={`${isEmergencyMode ? 'bg-gray-900 border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
+        <Card className="bg-gray-50 border-gray-200">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-1">
               <div className="h-2 w-2 rounded-full bg-blue-500"></div>
@@ -101,7 +100,7 @@ const WaterAutopsyVisualization = ({ isEmergencyMode, files }: WaterAutopsyVisua
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+            <p className="text-xs text-gray-500">
               Water quality will improve 92% within 1 year with proper treatment
             </p>
           </CardContent>
@@ -122,7 +121,6 @@ const WaterAutopsyVisualization = ({ isEmergencyMode, files }: WaterAutopsyVisua
 };
 
 const Reports = () => {
-  const [isEmergencyMode, setIsEmergencyMode] = useState(false);
   const isMobile = useIsMobile();
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
@@ -131,10 +129,10 @@ const Reports = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isEmergencyMode ? 'emergency-mode' : ''}`}>
-      <Navbar isEmergencyMode={isEmergencyMode} setIsEmergencyMode={setIsEmergencyMode} />
+    <div className="min-h-screen">
+      <Navbar />
       <div className="flex">
-        {!isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+        {!isMobile && <Sidebar />}
         <main className="flex-1 p-4 md:p-6">
           <Breadcrumb className="mb-4 md:mb-6">
             <BreadcrumbList>
@@ -152,10 +150,10 @@ const Reports = () => {
           </Breadcrumb>
           
           <header className="mb-6">
-            <h1 className={`text-2xl md:text-3xl font-bold ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
+            <h1 className="text-2xl md:text-3xl font-bold text-water-dark">
               AI-Powered Reports
             </h1>
-            <p className={`text-base md:text-lg ${isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className="text-base md:text-lg text-gray-600">
               Generate advanced water quality analysis and predictive reports
             </p>
           </header>
@@ -177,27 +175,27 @@ const Reports = () => {
             </TabsList>
             
             <TabsContent value="autopsy">
-              <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
+              <Card className="bg-white">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Brain className="h-5 w-5 text-blue-500" />
                     Interactive 3D Water "Autopsy"
                   </CardTitle>
-                  <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                  <CardDescription className="text-gray-600">
                     Upload lab results to generate a zoomable 3D water sample visualization
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-6">
                     {uploadedFiles.length === 0 ? (
-                      <FileUploader isEmergencyMode={isEmergencyMode} onFilesUploaded={handleFilesUploaded} />
+                      <FileUploader onFilesUploaded={handleFilesUploaded} />
                     ) : (
-                      <WaterAutopsyVisualization isEmergencyMode={isEmergencyMode} files={uploadedFiles} />
+                      <WaterAutopsyVisualization files={uploadedFiles} />
                     )}
                   </div>
                 </CardContent>
                 <CardFooter className="justify-between">
-                  <p className={`text-sm italic ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className="text-sm italic text-gray-500">
                     "Show clients the poison in their water—and exactly how we'll fix it"
                   </p>
                 </CardFooter>
@@ -205,21 +203,21 @@ const Reports = () => {
             </TabsContent>
             
             <TabsContent value="prediction">
-              <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
+              <Card className="bg-white">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5 text-amber-500" />
                     AI Forecasting Dashboard
                   </CardTitle>
-                  <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                  <CardDescription className="text-gray-600">
                     Predict water quality issues before they happen
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <CrisisPrediction isEmergencyMode={isEmergencyMode} />
+                  <CrisisPrediction />
                 </CardContent>
                 <CardFooter className="justify-between">
-                  <p className={`text-sm italic ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className="text-sm italic text-gray-500">
                     "Turn your team from water fixers to fortune tellers"
                   </p>
                 </CardFooter>
@@ -227,21 +225,21 @@ const Reports = () => {
             </TabsContent>
             
             <TabsContent value="compliance">
-              <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
+              <Card className="bg-white">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-purple-500" />
                     HydroLex AI Legal Assistant
                   </CardTitle>
-                  <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                  <CardDescription className="text-gray-600">
                     AI-powered water regulations compliance assistant
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ComplianceReport isEmergencyMode={isEmergencyMode} />
+                  <ComplianceReport />
                 </CardContent>
                 <CardFooter>
-                  <p className={`text-sm italic ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className="text-sm italic text-gray-500">
                     "Avoid million-dollar fines—let AI be your water lawyer"
                   </p>
                 </CardFooter>
@@ -250,7 +248,7 @@ const Reports = () => {
           </Tabs>
         </main>
       </div>
-      {isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+      {isMobile && <Sidebar />}
     </div>
   );
 };

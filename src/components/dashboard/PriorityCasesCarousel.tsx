@@ -140,7 +140,7 @@ export function PriorityCasesCarousel({ cases }: PriorityCasesCarouselProps) {
                 </div>
                 <div className="flex items-center gap-1">
                   <CalendarClock className="h-3.5 w-3.5" />
-                  <span>{currentCase.timestamp}</span>
+                  <span>{currentCase.timestamp || currentCase.collectionDate}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Droplet className="h-3.5 w-3.5" />

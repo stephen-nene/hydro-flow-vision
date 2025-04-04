@@ -18,7 +18,6 @@ interface QuickReference {
 }
 
 const AIChatbot = () => {
-  const [isEmergencyMode, setIsEmergencyMode] = useState(false);
   const [activeReference, setActiveReference] = useState<QuickReference | null>(null);
   const isMobile = useIsMobile();
   const { toast } = useToast();
@@ -128,10 +127,10 @@ New microplastic monitoring requirements added in 2022 amendment`
   };
 
   return (
-    <div className={`min-h-screen ${isEmergencyMode ? 'emergency-mode' : ''}`}>
-      <Navbar isEmergencyMode={isEmergencyMode} setIsEmergencyMode={setIsEmergencyMode} />
+    <div className="min-h-screen">
+      <Navbar />
       <div className="flex">
-        {!isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+        {!isMobile && <Sidebar />}
         <main className="flex-1 p-4 md:p-6 max-w-full overflow-x-hidden">
           <Breadcrumb className="mb-4 md:mb-6">
             <BreadcrumbList>
@@ -149,10 +148,10 @@ New microplastic monitoring requirements added in 2022 amendment`
           </Breadcrumb>
           
           <header className="mb-6">
-            <h1 className={`text-2xl md:text-3xl font-bold ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
+            <h1 className="text-2xl md:text-3xl font-bold text-water-dark">
               HydraLex AI Legal Assistant
             </h1>
-            <p className={`text-base md:text-lg ${isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            <p className="text-base md:text-lg text-gray-600">
               AI-powered water regulations compliance assistant
             </p>
           </header>
@@ -163,28 +162,27 @@ New microplastic monitoring requirements added in 2022 amendment`
                 <QuickReference 
                   reference={activeReference} 
                   onBack={() => setActiveReference(null)} 
-                  isEmergencyMode={isEmergencyMode}
                 />
               ) : (
-                <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'} h-[calc(100vh-14rem)]`}>
+                <Card className="bg-white h-[calc(100vh-14rem)]">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Book className="h-5 w-5 text-purple-500" />
                       Regulatory Assistant Chat
                     </CardTitle>
-                    <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+                    <CardDescription className="text-gray-600">
                       Ask in plain English about water regulations and compliance
                     </CardDescription>
                   </CardHeader>
-                  <WaterChatbot isEmergencyMode={isEmergencyMode} />
+                  <WaterChatbot />
                 </Card>
               )}
             </div>
             
             <div className="space-y-6">
-              <ComplianceTools isEmergencyMode={isEmergencyMode} />
+              <ComplianceTools />
               
-              <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'}`}>
+              <Card className="bg-white">
                 <CardHeader>
                   <CardTitle>Quick References</CardTitle>
                 </CardHeader>
@@ -193,17 +191,17 @@ New microplastic monitoring requirements added in 2022 amendment`
                     {quickReferences.map((reference, index) => (
                       <div 
                         key={index}
-                        className={`p-3 rounded ${isEmergencyMode ? 'bg-gray-900' : 'bg-gray-50'} border ${isEmergencyMode ? 'border-gray-800' : 'border-gray-200'} cursor-pointer hover:bg-opacity-80`}
+                        className="p-3 rounded bg-gray-50 border border-gray-200 cursor-pointer hover:bg-opacity-80"
                         onClick={() => handleViewReference(reference)}
                       >
                         <p className="text-sm font-medium">{reference.title}</p>
-                        <p className={`text-xs ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'} mt-1`}>{reference.description}</p>
+                        <p className="text-xs text-gray-500 mt-1">{reference.description}</p>
                       </div>
                     ))}
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <p className={`text-xs italic ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <p className="text-xs italic text-gray-500">
                     "Avoid million-dollar fines—let AI be your water lawyer"
                   </p>
                 </CardFooter>
@@ -212,7 +210,7 @@ New microplastic monitoring requirements added in 2022 amendment`
           </div>
         </main>
       </div>
-      {isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
+      {isMobile && <Sidebar />}
     </div>
   );
 };
