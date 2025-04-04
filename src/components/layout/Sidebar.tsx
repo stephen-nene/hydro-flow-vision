@@ -24,10 +24,10 @@ import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface SidebarProps {
-  isEmergencyMode: boolean;
+  // Remove emergency mode prop
 }
 
-export function Sidebar({ isEmergencyMode }: SidebarProps) {
+export function Sidebar({}: SidebarProps) {
   const location = useLocation();
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(false);
@@ -74,10 +74,7 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
   ];
 
   const SidebarContent = () => (
-    <div className={cn(
-      "w-full h-full flex flex-col p-4",
-      isEmergencyMode ? "bg-black/90 text-white" : "bg-white text-gray-800"
-    )}>
+    <div className="w-full h-full flex flex-col p-4 bg-white text-gray-800">
       <div className="space-y-2">
         {/* Main navigation */}
         {navigationItems.map((item) => (
@@ -86,8 +83,8 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
             variant="ghost" 
             className={cn(
               "w-full justify-start",
-              isEmergencyMode ? "text-white hover:bg-gray-800" : "text-gray-700 hover:bg-water-light/50",
-              isActivePath(item.path) && (isEmergencyMode ? "bg-gray-800" : "bg-water-light/50")
+              "text-gray-700 hover:bg-water-light/50",
+              isActivePath(item.path) && "bg-water-light/50"
             )}
             onClick={() => isMobile && setOpen(false)}
             asChild
@@ -113,10 +110,7 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
           <CollapsibleTrigger asChild>
             <Button 
               variant="ghost" 
-              className={cn(
-                "w-full justify-between",
-                isEmergencyMode ? "text-water-danger hover:bg-gray-800" : "text-water-dark hover:bg-water-light/50"
-              )}
+              className="w-full justify-between text-water-dark hover:bg-water-light/50"
             >
               <div className="flex items-center">
                 <Brain className="mr-2 h-4 w-4" />
@@ -137,8 +131,8 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
                 variant="ghost" 
                 className={cn(
                   "w-full justify-start",
-                  isEmergencyMode ? "text-white hover:bg-gray-800" : "text-gray-700 hover:bg-water-light/50",
-                  isActivePath(item.path) && (isEmergencyMode ? "bg-gray-800" : "bg-water-light/50")
+                  "text-gray-700 hover:bg-water-light/50",
+                  isActivePath(item.path) && "bg-water-light/50"
                 )}
                 onClick={() => isMobile && setOpen(false)}
                 asChild
@@ -159,7 +153,7 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
       </div>
       
       <div className="mt-auto">
-        <VoiceCommandButton isEmergencyMode={isEmergencyMode} />
+        <VoiceCommandButton />
       </div>
     </div>
   );
@@ -171,10 +165,7 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
         <SheetTrigger asChild className="fixed bottom-4 left-4 z-40 md:hidden">
           <Button 
             size="icon" 
-            className={cn(
-              "rounded-full shadow-lg h-12 w-12",
-              isEmergencyMode ? "bg-water-danger text-white" : "bg-water-dark text-white"
-            )}
+            className="rounded-full shadow-lg h-12 w-12 bg-water-dark text-white"
           >
             <Menu className="h-6 w-6" />
           </Button>
@@ -188,10 +179,7 @@ export function Sidebar({ isEmergencyMode }: SidebarProps) {
   
   // For desktop, we show the regular sidebar
   return (
-    <div className={cn(
-      "w-[280px] h-[calc(100vh-4rem)] flex flex-col p-4 border-r",
-      isEmergencyMode ? "bg-black/90 border-water-danger/30" : "bg-white border-water-light/80"
-    )}>
+    <div className="w-[280px] h-[calc(100vh-4rem)] flex flex-col p-4 border-r bg-white border-water-light/80">
       <SidebarContent />
     </div>
   );

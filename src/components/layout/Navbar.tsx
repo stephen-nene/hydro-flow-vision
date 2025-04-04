@@ -1,7 +1,5 @@
-
-import { Bell, Menu, Settings, User, LogOut, HelpCircle, ChevronDown, Shield, FileText, AlertTriangle, Database, Activity, ArrowUpRight, Monitor, Sun } from "lucide-react";
+import { Bell, Menu, Settings, User, LogOut, HelpCircle, ChevronDown, Shield, FileText, AlertTriangle, Database, Activity, ArrowUpRight, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -38,8 +36,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
 interface NavbarProps {
-  isEmergencyMode: boolean;
-  setIsEmergencyMode: (value: boolean) => void;
+  // No emergency mode prop
 }
 
 interface NotificationType {
@@ -52,7 +49,7 @@ interface NotificationType {
   type: 'system' | 'alert' | 'update' | 'maintenance' | 'security';
 }
 
-export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
+export function Navbar({}: NavbarProps) {
   const [notificationsCount, setNotificationsCount] = useState(5);
   const [notifications, setNotifications] = useState<NotificationType[]>([
     {
@@ -101,7 +98,6 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
       type: 'maintenance'
     }
   ]);
-  // Removing the useTheme reference since we're only using emergency mode toggle
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -113,20 +109,19 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
 
   useEffect(() => {
     setNotificationsCount(notifications.filter(n => !n.read).length);
-
+    
     const hasCriticalAlert = notifications.some(
       n => n.priority === 'high' && n.type === 'alert' && !n.read
     );
     
-    if (hasCriticalAlert && !isEmergencyMode) {
-      setIsEmergencyMode(true);
+    if (hasCriticalAlert) {
       toast({
-        title: "Emergency Mode Activated",
-        description: "Critical water quality alert detected. System has switched to emergency mode.",
+        title: "Critical Alert",
+        description: "Critical water quality alert detected.",
         variant: "destructive"
       });
     }
-  }, [notifications, isEmergencyMode, setIsEmergencyMode, toast]);
+  }, [notifications, toast]);
 
   const markAllAsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
@@ -218,13 +213,13 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
   };
 
   return (
-    <div className={`sticky top-0 z-50 w-full border-b ${isEmergencyMode ? 'bg-black/90 border-water-danger/30' : 'bg-white/90 border-water-light'} backdrop-blur-sm`}>
+    <div className="sticky top-0 z-50 w-full border-b bg-white/90 border-water-light backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex items-center justify-center overflow-hidden rounded-full h-8 w-8 bg-water-dark">
             <span className="font-semibold text-white">H</span>
           </div>
-          <span className={`font-semibold text-xl ${isEmergencyMode ? 'text-water-danger' : 'text-water-dark'}`}>
+          <span className="font-semibold text-xl text-water-dark">
             Hydra
           </span>
         </div>
@@ -238,39 +233,18 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                   size="icon" 
                   className="md:hidden"
                 >
-                  <Menu className={isEmergencyMode ? "text-water-danger" : "text-water-dark"} />
+                  <Menu className="text-water-dark" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent 
                 align="end" 
-                className={`w-64 p-2 ${isEmergencyMode ? 'bg-black text-white border-water-danger/30' : 'bg-white text-gray-800 border-water-light'}`}
+                className="w-64 p-2 bg-white text-gray-800 border-water-light"
                 style={{ maxHeight: '90vh', overflowY: 'auto' }}
               >
-                <div className="mb-3 px-2">
-                  <Label className="text-sm font-medium mb-1 block">Emergency Mode</Label>
-                  <ToggleGroup type="single" value={isEmergencyMode ? "dark" : "light"} 
-                    onValueChange={(value) => {
-                      if (value === "dark" || value === "light") {
-                        setIsEmergencyMode(value === "dark");
-                      }
-                    }}
-                    className="w-full flex justify-center"
-                  >
-                    <ToggleGroupItem value="light" aria-label="Light Mode" className="flex-1 data-[state=on]:bg-water-light data-[state=on]:text-water-dark flex items-center justify-center">
-                      <Sun className="h-4 w-4 mr-2" />
-                      Normal
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value="dark" aria-label="Dark Mode" className="flex-1 data-[state=on]:bg-water-danger data-[state=on]:text-white flex items-center justify-center">
-                      <AlertTriangle className="h-4 w-4 mr-2" />
-                      Emergency
-                    </ToggleGroupItem>
-                  </ToggleGroup>
-                </div>
-                
-                <div className="flex justify-between items-center px-2 py-3 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-center px-2 py-3 border-b border-gray-200">
                   <div className="flex items-center gap-2">
-                    <Bell className={isEmergencyMode ? "text-water-danger" : "text-water-dark"} />
-                    <span className={`text-sm ${isEmergencyMode ? 'text-gray-400' : 'text-gray-600'}`}>Notifications</span>
+                    <Bell className="text-water-dark" />
+                    <span className="text-sm text-gray-600">Notifications</span>
                   </div>
                   {notificationsCount > 0 && (
                     <Badge variant="destructive" className="bg-water-danger">
@@ -281,41 +255,41 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                 
                 <div className="flex flex-col w-full">
                   <Link to="/" onClick={() => setIsMenuOpen(false)}>
-                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                    <DropdownMenuItem className="hover:bg-water-light/50">
                       Dashboard
                     </DropdownMenuItem>
                   </Link>
                   
                   <Link to="/water-samples" onClick={() => setIsMenuOpen(false)}>
-                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                    <DropdownMenuItem className="hover:bg-water-light/50">
                       Water Samples
                     </DropdownMenuItem>
                   </Link>
                   
                   <Link to="/treatment-simulator" onClick={() => setIsMenuOpen(false)}>
-                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                    <DropdownMenuItem className="hover:bg-water-light/50">
                       Treatment Simulator
                     </DropdownMenuItem>
                   </Link>
                   
                   <Link to="/reports" onClick={() => setIsMenuOpen(false)}>
-                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                    <DropdownMenuItem className="hover:bg-water-light/50">
                       AI Reports
                     </DropdownMenuItem>
                   </Link>
                   
                   <Link to="/ai-chatbot" onClick={() => setIsMenuOpen(false)}>
-                    <DropdownMenuItem className={`${isEmergencyMode ? 'hover:bg-gray-800' : 'hover:bg-water-light/50'}`}>
+                    <DropdownMenuItem className="hover:bg-water-light/50">
                       AI Chatbot
                     </DropdownMenuItem>
                   </Link>
                 </div>
                 
-                <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2 flex justify-between items-center px-2">
+                <div className="border-t border-gray-200 mt-2 pt-2 flex justify-between items-center px-2">
                   <div className="flex items-center gap-2">
-                    <Settings className={isEmergencyMode ? "text-gray-400" : "text-gray-600"} />
+                    <Settings className="text-gray-600" />
                     <Link to="/settings" onClick={() => setIsMenuOpen(false)}>
-                      <span className={`text-sm ${isEmergencyMode ? 'text-gray-400' : 'text-gray-600'}`}>Settings</span>
+                      <span className="text-sm text-gray-600">Settings</span>
                     </Link>
                   </div>
                   
@@ -331,25 +305,10 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
           </div>
         ) : (
           <div className="flex items-center gap-6">
-            <ToggleGroup type="single" value={isEmergencyMode ? "dark" : "light"} onValueChange={(value) => {
-              if (value === "dark" || value === "light") {
-                setIsEmergencyMode(value === "dark");
-              }
-            }}>
-              <ToggleGroupItem value="light" aria-label="Light Mode" className="data-[state=on]:bg-water-light data-[state=on]:text-water-dark">
-                <Sun className="h-4 w-4 mr-2" />
-                Normal Mode
-              </ToggleGroupItem>
-              <ToggleGroupItem value="dark" aria-label="Dark Mode" className="data-[state=on]:bg-water-danger data-[state=on]:text-white">
-                <AlertTriangle className="h-4 w-4 mr-2" />
-                Emergency Mode
-              </ToggleGroupItem>
-            </ToggleGroup>
-
             <DropdownMenu open={notificationsOpen} onOpenChange={setNotificationsOpen}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
-                  <Bell className={isEmergencyMode ? "text-water-danger" : "text-water-dark"} />
+                  <Bell className="text-water-dark" />
                   {notificationsCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-water-danger text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {notificationsCount}
@@ -370,7 +329,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                 <div className="max-h-[300px] overflow-y-auto">
                   {notifications.length > 0 ? (
                     notifications.map((notification) => (
-                      <div key={notification.id} className="px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-800">
+                      <div key={notification.id} className="px-2 py-2 hover:bg-gray-100">
                         <div className="flex items-start gap-2">
                           <div className="mt-1">{getTypeIcon(notification.type)}</div>
                           <div className="flex-1 min-w-0">
@@ -388,7 +347,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                                 <ChevronDown className="h-3 w-3" />
                               </Button>
                             </div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 truncate">{notification.description}</p>
+                            <p className="text-xs text-gray-500 mb-1 truncate">{notification.description}</p>
                             <div className="flex justify-between items-center">
                               <span className="text-xs text-gray-400">{notification.time}</span>
                               <Badge
@@ -447,7 +406,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
-                  <Settings className={isEmergencyMode ? "text-gray-400" : "text-gray-600"} />
+                  <Settings className="text-gray-600" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
