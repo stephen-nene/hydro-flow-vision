@@ -18,11 +18,10 @@ import {
 } from "recharts";
 
 interface WaterQualityMetricsProps {
-  isEmergencyMode: boolean;
   waterSamples: WaterSample[];
 }
 
-export function WaterQualityMetrics({ isEmergencyMode, waterSamples }: WaterQualityMetricsProps) {
+export function WaterQualityMetrics({ waterSamples }: WaterQualityMetricsProps) {
   const [activeTab, setActiveTab] = useState("trends");
   
   // Process data for toxicity trend chart
@@ -51,10 +50,7 @@ export function WaterQualityMetrics({ isEmergencyMode, waterSamples }: WaterQual
   
   return (
     <div className="space-y-4">
-      <h2 className={cn(
-        "text-xl font-semibold",
-        isEmergencyMode ? "text-water-danger" : "text-water-dark"
-      )}>
+      <h2 className="text-xl font-semibold text-water-dark">
         Water Quality Metrics
       </h2>
       
@@ -63,17 +59,14 @@ export function WaterQualityMetrics({ isEmergencyMode, waterSamples }: WaterQual
         onValueChange={setActiveTab}
         className="space-y-4"
       >
-        <TabsList className={cn(
-          "grid w-full grid-cols-3 max-w-md mx-auto",
-          isEmergencyMode && "bg-gray-800"
-        )}>
+        <TabsList className="grid w-full grid-cols-3 max-w-md mx-auto">
           <TabsTrigger value="trends">Toxicity Trends</TabsTrigger>
           <TabsTrigger value="contaminants">Contaminants</TabsTrigger>
           <TabsTrigger value="metrics">Key Metrics</TabsTrigger>
         </TabsList>
         
         <TabsContent value="trends" className="mt-4">
-          <Card className={isEmergencyMode ? "bg-gray-800 border-gray-700" : ""}>
+          <Card>
             <CardContent className="pt-6">
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -89,32 +82,32 @@ export function WaterQualityMetrics({ isEmergencyMode, waterSamples }: WaterQual
                     </defs>
                     <CartesianGrid 
                       strokeDasharray="3 3" 
-                      stroke={isEmergencyMode ? "#555" : "#eee"} 
+                      stroke="#eee"
                     />
                     <XAxis 
                       dataKey="name" 
-                      stroke={isEmergencyMode ? "#aaa" : "#888"}
+                      stroke="#888"
                       label={{ 
                         value: 'Sample ID', 
                         position: 'insideBottom', 
                         offset: -5,
-                        style: { fill: isEmergencyMode ? '#aaa' : '#888' }
+                        style: { fill: '#888' }
                       }}
                     />
                     <YAxis 
-                      stroke={isEmergencyMode ? "#aaa" : "#888"}
+                      stroke="#888"
                       label={{ 
                         value: 'Toxicity %', 
                         angle: -90, 
                         position: 'insideLeft',
-                        style: { fill: isEmergencyMode ? '#aaa' : '#888' }
+                        style: { fill: '#888' }
                       }}
                     />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: isEmergencyMode ? '#333' : '#fff',
-                        borderColor: isEmergencyMode ? '#555' : '#ddd',
-                        color: isEmergencyMode ? '#eee' : '#333'
+                        backgroundColor: '#fff',
+                        borderColor: '#ddd',
+                        color: '#333'
                       }}
                     />
                     <Area 
@@ -133,7 +126,7 @@ export function WaterQualityMetrics({ isEmergencyMode, waterSamples }: WaterQual
         </TabsContent>
         
         <TabsContent value="contaminants" className="mt-4">
-          <Card className={isEmergencyMode ? "bg-gray-800 border-gray-700" : ""}>
+          <Card>
             <CardContent className="pt-6">
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -143,33 +136,33 @@ export function WaterQualityMetrics({ isEmergencyMode, waterSamples }: WaterQual
                   >
                     <CartesianGrid 
                       strokeDasharray="3 3" 
-                      stroke={isEmergencyMode ? "#555" : "#eee"} 
+                      stroke="#eee"
                     />
                     <XAxis 
                       dataKey="name" 
-                      stroke={isEmergencyMode ? "#aaa" : "#888"}
+                      stroke="#888"
                     />
                     <YAxis 
-                      stroke={isEmergencyMode ? "#aaa" : "#888"}
+                      stroke="#888"
                       label={{ 
                         value: 'Count', 
                         angle: -90, 
                         position: 'insideLeft',
-                        style: { fill: isEmergencyMode ? '#aaa' : '#888' }
+                        style: { fill: '#888' }
                       }}
                     />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: isEmergencyMode ? '#333' : '#fff',
-                        borderColor: isEmergencyMode ? '#555' : '#ddd',
-                        color: isEmergencyMode ? '#eee' : '#333'
+                        backgroundColor: '#fff',
+                        borderColor: '#ddd',
+                        color: '#333'
                       }}
                     />
                     <Legend />
                     <Bar 
                       dataKey="count" 
                       name="Occurrence" 
-                      fill={isEmergencyMode ? "#ea384c" : "#33C3F0"}
+                      fill="#33C3F0"
                     />
                   </BarChart>
                 </ResponsiveContainer>
@@ -179,7 +172,7 @@ export function WaterQualityMetrics({ isEmergencyMode, waterSamples }: WaterQual
         </TabsContent>
         
         <TabsContent value="metrics" className="mt-4">
-          <Card className={isEmergencyMode ? "bg-gray-800 border-gray-700" : ""}>
+          <Card>
             <CardContent className="pt-6">
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -199,26 +192,26 @@ export function WaterQualityMetrics({ isEmergencyMode, waterSamples }: WaterQual
                     </defs>
                     <CartesianGrid 
                       strokeDasharray="3 3" 
-                      stroke={isEmergencyMode ? "#555" : "#eee"} 
+                      stroke="#eee"
                     />
                     <XAxis 
                       dataKey="name" 
-                      stroke={isEmergencyMode ? "#aaa" : "#888"}
+                      stroke="#888"
                       label={{ 
                         value: 'Sample ID', 
                         position: 'insideBottom', 
                         offset: -5,
-                        style: { fill: isEmergencyMode ? '#aaa' : '#888' }
+                        style: { fill: '#888' }
                       }}
                     />
                     <YAxis 
-                      stroke={isEmergencyMode ? "#aaa" : "#888"}
+                      stroke="#888"
                     />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: isEmergencyMode ? '#333' : '#fff',
-                        borderColor: isEmergencyMode ? '#555' : '#ddd',
-                        color: isEmergencyMode ? '#eee' : '#333'
+                        backgroundColor: '#fff',
+                        borderColor: '#ddd',
+                        color: '#333'
                       }}
                     />
                     <Legend />
