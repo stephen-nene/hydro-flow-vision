@@ -12,10 +12,9 @@ interface QuickReferenceProps {
     content: string;
   };
   onBack: () => void;
-  isEmergencyMode: boolean;
 }
 
-export function QuickReference({ reference, onBack, isEmergencyMode }: QuickReferenceProps) {
+export function QuickReference({ reference, onBack }: QuickReferenceProps) {
   const { toast } = useToast();
   const [activeSection, setActiveSection] = useState<string | null>(null);
   
@@ -77,14 +76,14 @@ export function QuickReference({ reference, onBack, isEmergencyMode }: QuickRefe
   };
 
   return (
-    <Card className={`${isEmergencyMode ? 'bg-black/60 border-water-danger/30 text-white' : 'bg-white'} h-[calc(100vh-14rem)]`}>
+    <Card className="bg-white h-[calc(100vh-14rem)]">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="flex items-center gap-2 text-xl">
               {reference.title}
             </CardTitle>
-            <CardDescription className={isEmergencyMode ? 'text-gray-300' : 'text-gray-600'}>
+            <CardDescription className="text-gray-600">
               {reference.description}
             </CardDescription>
           </div>
@@ -104,8 +103,8 @@ export function QuickReference({ reference, onBack, isEmergencyMode }: QuickRefe
                   key={section}
                   className={`text-sm py-1.5 px-2 rounded-md cursor-pointer flex items-center justify-between ${
                     activeSection === section 
-                      ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
-                      : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+                      ? 'bg-blue-100 text-blue-600' 
+                      : 'hover:bg-gray-50'
                   }`}
                   onClick={() => setActiveSection(section)}
                 >
@@ -122,7 +121,7 @@ export function QuickReference({ reference, onBack, isEmergencyMode }: QuickRefe
         <div className="col-span-2 overflow-auto px-4 pb-4">
           {activeSection && sections[activeSection] ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-between sticky top-0 bg-white dark:bg-black/60 py-2 border-b z-10">
+              <div className="flex items-center justify-between sticky top-0 bg-white py-2 border-b z-10">
                 <h2 className="text-lg font-medium">{activeSection}</h2>
                 <div className="flex md:hidden gap-2">
                   <Button variant="outline" size="sm" onClick={() => setActiveSection(null)}>
@@ -131,13 +130,13 @@ export function QuickReference({ reference, onBack, isEmergencyMode }: QuickRefe
                 </div>
               </div>
               
-              <div className="prose dark:prose-invert max-w-none">
+              <div className="prose max-w-none">
                 {sections[activeSection].split('\n').map((line, i) => {
                   if (line.startsWith('| ')) {
                     // This is a table row
                     const cells = line.split('|').filter(cell => cell.trim() !== '');
                     return (
-                      <div key={i} className="flex border-b dark:border-gray-700 my-1">
+                      <div key={i} className="flex border-b my-1">
                         {cells.map((cell, cellIndex) => (
                           <div 
                             key={cellIndex} 
@@ -166,7 +165,7 @@ export function QuickReference({ reference, onBack, isEmergencyMode }: QuickRefe
                 {sectionNames.map((section) => (
                   <div 
                     key={section}
-                    className="border rounded-md p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                    className="border rounded-md p-3 hover:bg-gray-50 cursor-pointer"
                     onClick={() => setActiveSection(section)}
                   >
                     <div className="flex items-center justify-between">

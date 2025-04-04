@@ -6,11 +6,10 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/components/ui/use-toast";
 
 interface FileUploaderProps {
-  isEmergencyMode: boolean;
   onFilesUploaded: (files: File[]) => void;
 }
 
-export const FileUploader = ({ isEmergencyMode, onFilesUploaded }: FileUploaderProps) => {
+export const FileUploader = ({ onFilesUploaded }: FileUploaderProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -115,7 +114,7 @@ export const FileUploader = ({ isEmergencyMode, onFilesUploaded }: FileUploaderP
           toast({
             title: "Upload complete",
             description: `${files.length} file${files.length > 1 ? 's' : ''} processed successfully`,
-            variant: isEmergencyMode ? "destructive" : "default",
+            variant: "default",
           });
           return 100;
         }
@@ -133,12 +132,8 @@ export const FileUploader = ({ isEmergencyMode, onFilesUploaded }: FileUploaderP
       <div
         className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
           isDragging 
-            ? isEmergencyMode 
-              ? 'border-water-danger bg-black/60' 
-              : 'border-water-dark bg-water-light/30' 
-            : isEmergencyMode 
-              ? 'border-gray-700 bg-black/30 hover:border-gray-600' 
-              : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+            ? 'border-water-dark bg-water-light/30' 
+            : 'border-gray-200 bg-gray-50 hover:border-gray-300'
         }`}
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
@@ -156,7 +151,7 @@ export const FileUploader = ({ isEmergencyMode, onFilesUploaded }: FileUploaderP
         
         <Upload className={`h-10 w-10 mx-auto mb-4 ${isDragging ? 'text-water-dark' : 'text-gray-400'}`} />
         <h3 className="text-lg font-medium mb-1">Upload Lab Results</h3>
-        <p className={`text-sm ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+        <p className="text-sm text-gray-500">
           Drag and drop your water test results or click to browse
         </p>
         <Button className="mt-4" onClick={triggerFileInput}>
@@ -165,24 +160,22 @@ export const FileUploader = ({ isEmergencyMode, onFilesUploaded }: FileUploaderP
       </div>
       
       {files.length > 0 && (
-        <div className={`p-4 rounded-md ${isEmergencyMode ? 'bg-gray-900' : 'bg-white border border-gray-200'}`}>
-          <h4 className={`font-medium mb-2 ${isEmergencyMode ? 'text-white' : 'text-gray-900'}`}>
+        <div className="p-4 rounded-md bg-white border border-gray-200">
+          <h4 className="font-medium mb-2 text-gray-900">
             Selected Files ({files.length})
           </h4>
           <div className="space-y-2 max-h-40 overflow-y-auto mb-4">
             {files.map((file, index) => (
               <div 
                 key={index} 
-                className={`flex items-center justify-between p-2 rounded ${
-                  isEmergencyMode ? 'bg-black' : 'bg-gray-50'
-                }`}
+                className="flex items-center justify-between p-2 rounded bg-gray-50"
               >
                 <div className="flex items-center">
                   <FileText className="h-4 w-4 mr-2 text-blue-500" />
-                  <span className={`text-sm truncate max-w-[200px] ${isEmergencyMode ? 'text-white' : 'text-gray-900'}`}>
+                  <span className="text-sm truncate max-w-[200px] text-gray-900">
                     {file.name}
                   </span>
-                  <span className={`text-xs ml-2 ${isEmergencyMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <span className="text-xs ml-2 text-gray-500">
                     {(file.size / 1024).toFixed(1)} KB
                   </span>
                 </div>
