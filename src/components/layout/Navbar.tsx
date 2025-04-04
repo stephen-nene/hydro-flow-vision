@@ -1,3 +1,4 @@
+
 import { Bell, Menu, Settings, User, LogOut, HelpCircle, ChevronDown, Shield, FileText, AlertTriangle, Database, Activity, ArrowUpRight, Monitor, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -100,7 +101,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
       type: 'maintenance'
     }
   ]);
-  const { theme, setTheme } = useTheme();
+  // Removing the useTheme reference since we're only using emergency mode toggle
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
