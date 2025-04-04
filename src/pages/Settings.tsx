@@ -9,7 +9,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Settings = () => {
   const [isEmergencyMode, setIsEmergencyMode] = useState(false);
@@ -59,6 +58,13 @@ const Settings = () => {
       description: "Control your data, exports, and sample management policies",
       icon: "💾",
       route: "/settings/data"
+    },
+    {
+      id: "help",
+      title: "Help & Documentation",
+      description: "Access support resources and documentation",
+      icon: "❓",
+      route: "/settings/help"
     }
   ];
 
@@ -75,7 +81,7 @@ const Settings = () => {
       <Navbar isEmergencyMode={isEmergencyMode} setIsEmergencyMode={setIsEmergencyMode} />
       <div className="flex">
         {!isMobile && <Sidebar isEmergencyMode={isEmergencyMode} />}
-        <main className="flex-1 p-4 md:p-6">
+        <main className="flex-1 p-4 md:p-6 max-w-full overflow-x-hidden">
           <Breadcrumb className="mb-4 md:mb-6">
             <BreadcrumbList>
               <BreadcrumbItem>

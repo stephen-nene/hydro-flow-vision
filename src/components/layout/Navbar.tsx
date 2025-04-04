@@ -1,3 +1,4 @@
+
 import { Bell, Menu, Settings, Sun, Moon, User, LogOut, HelpCircle, ChevronDown, Shield, FileText, AlertTriangle, Database, Activity, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -18,7 +19,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuPortal
 } from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { 
   Dialog,
   DialogContent,
@@ -107,10 +108,25 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
   const [activeProfileTab, setActiveProfileTab] = useState("account");
   const [securityDialogOpen, setSecurityDialogOpen] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setNotificationsCount(notifications.filter(n => !n.read).length);
-  }, [notifications]);
+
+    // Check for critical alerts and automatically set emergency mode
+    const hasCriticalAlert = notifications.some(
+      n => n.priority === 'high' && n.type === 'alert' && !n.read
+    );
+    
+    if (hasCriticalAlert && !isEmergencyMode) {
+      setIsEmergencyMode(true);
+      toast({
+        title: "Emergency Mode Activated",
+        description: "Critical water quality alert detected. System has switched to emergency mode.",
+        variant: "destructive"
+      });
+    }
+  }, [notifications, isEmergencyMode, setIsEmergencyMode, toast]);
 
   const markAllAsRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
@@ -197,6 +213,10 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
     });
   };
 
+  const handleProfileClick = () => {
+    navigate("/profile");
+  };
+
   return (
     <div className={`sticky top-0 z-50 w-full border-b ${isEmergencyMode ? 'bg-black/90 border-water-danger/30' : 'bg-white/90 border-water-light'} backdrop-blur-sm`}>
       <div className="container flex h-16 items-center justify-between">
@@ -235,11 +255,11 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                     }}
                     className="w-full flex justify-center"
                   >
-                    <ToggleGroupItem value="light" aria-label="Light Mode" className="flex-1 data-[state=on]:bg-water-light data-[state=on]:text-water-dark">
+                    <ToggleGroupItem value="light" aria-label="Light Mode" className="flex-1 data-[state=on]:bg-water-light data-[state=on]:text-water-dark flex items-center justify-center">
                       <Sun className="h-4 w-4 mr-2" />
                       Light Mode
                     </ToggleGroupItem>
-                    <ToggleGroupItem value="dark" aria-label="Dark Mode" className="flex-1 data-[state=on]:bg-water-danger data-[state=on]:text-white">
+                    <ToggleGroupItem value="dark" aria-label="Dark Mode" className="flex-1 data-[state=on]:bg-water-danger data-[state=on]:text-white flex items-center justify-center">
                       <Moon className="h-4 w-4 mr-2" />
                       Dark Mode
                     </ToggleGroupItem>
@@ -367,10 +387,13 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                                 <ChevronDown className="h-3 w-3" />
                               </Button>
                             </div>
-                            <p className="text-xs text-gray-500 mb-1 truncate">{notification.description}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1 truncate">{notification.description}</p>
                             <div className="flex justify-between items-center">
                               <span className="text-xs text-gray-400">{notification.time}</span>
-                              <Badge variant="outline" className={`text-xs ${getPriorityColor(notification.priority)}`}>
+                              <Badge
+                                variant="outline"
+                                className={`text-xs ${getPriorityColor(notification.priority)}`}
+                              >
                                 {notification.priority}
                               </Badge>
                             </div>
@@ -470,15 +493,11 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => {
-                  toast({
-                    title: "Help & Documentation",
-                    description: "Opening documentation in a new tab",
-                  });
-                  window.open("#", "_blank");
-                }}>
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  <span>Help & Documentation</span>
+                <DropdownMenuItem asChild>
+                  <Link to="/settings/help">
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    <span>Help & Documentation</span>
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-water-danger" onClick={handleLogout}>
@@ -490,9 +509,7 @@ export function Navbar({ isEmergencyMode, setIsEmergencyMode }: NavbarProps) {
 
             <Avatar 
               className="cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => {
-                window.location.href = "/profile";
-              }}
+              onClick={handleProfileClick}
             >
               <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" />
               <AvatarFallback>JD</AvatarFallback>
