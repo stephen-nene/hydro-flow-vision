@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileCheck, AlertTriangle, Scale, Plus, Clock, CheckSquare, FileText, CalendarClock, FilterX } from "lucide-react";
+import { FileCheck, AlertTriangle, Scale, Plus, Clock, CheckSquare, FileText, CalendarClock, FilterX, BookOpen } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";

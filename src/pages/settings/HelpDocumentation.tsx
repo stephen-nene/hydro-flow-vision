@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -22,7 +21,14 @@ import {
   Phone,
   Globe,
   Award,
-  Heart
+  Heart,
+  ThumbsUp,
+  Download,
+  Calendar,
+  Upload,
+  Brain,
+  Shield,
+  Cable
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,6 +43,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 
 interface DocumentCategory {
   id: string;

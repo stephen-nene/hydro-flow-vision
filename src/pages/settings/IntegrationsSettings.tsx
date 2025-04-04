@@ -20,7 +20,12 @@ import {
   X,
   AlertTriangle,
   PlusCircle,
-  Key
+  Key,
+  Download,
+  ExternalLink,
+  Github,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
