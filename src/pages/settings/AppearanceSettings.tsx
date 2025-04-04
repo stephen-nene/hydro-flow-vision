@@ -4,7 +4,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
-import { Home, Settings as SettingsIcon, Palette } from "lucide-react";
+import { Home, Settings as SettingsIcon, Palette, Monitor, SunMedium, Moon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,10 +14,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
+import { useTheme } from "@/components/ThemeProvider";
 
 const AppearanceSettings = () => {
   const [isEmergencyMode, setIsEmergencyMode] = useState(false);
-  const [theme, setTheme] = useState("system");
   const [fontSize, setFontSize] = useState(16);
   const [colorScheme, setColorScheme] = useState("blue");
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -26,6 +26,7 @@ const AppearanceSettings = () => {
   
   const isMobile = useIsMobile();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   
   const handleSaveSettings = () => {
     toast({
@@ -110,20 +111,29 @@ const AppearanceSettings = () => {
                   <div className="space-y-4">
                     <div>
                       <h3 className="text-lg font-medium mb-3">Application Theme</h3>
-                      <RadioGroup value={theme} onValueChange={setTheme} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="flex items-center space-x-2 border rounded-md p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
-                          <RadioGroupItem value="light" id="theme-light" />
-                          <Label htmlFor="theme-light" className="cursor-pointer flex-1">Light Mode</Label>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div 
+                          className={`flex flex-col items-center justify-center rounded-md border-2 p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 ${theme === 'light' ? 'border-water-dark' : 'border-gray-200'}`} 
+                          onClick={() => setTheme("light")}
+                        >
+                          <SunMedium className="h-6 w-6 mb-2" />
+                          <span>Light</span>
                         </div>
-                        <div className="flex items-center space-x-2 border rounded-md p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
-                          <RadioGroupItem value="dark" id="theme-dark" />
-                          <Label htmlFor="theme-dark" className="cursor-pointer flex-1">Dark Mode</Label>
+                        <div 
+                          className={`flex flex-col items-center justify-center rounded-md border-2 p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 ${theme === 'dark' ? 'border-water-dark dark:border-water-light' : 'border-gray-200'}`} 
+                          onClick={() => setTheme("dark")}
+                        >
+                          <Moon className="h-6 w-6 mb-2" />
+                          <span>Dark</span>
                         </div>
-                        <div className="flex items-center space-x-2 border rounded-md p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
-                          <RadioGroupItem value="system" id="theme-system" />
-                          <Label htmlFor="theme-system" className="cursor-pointer flex-1">System Default</Label>
+                        <div 
+                          className={`flex flex-col items-center justify-center rounded-md border-2 p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 ${theme === 'system' ? 'border-water-dark dark:border-water-light' : 'border-gray-200'}`} 
+                          onClick={() => setTheme("system")}
+                        >
+                          <Monitor className="h-6 w-6 mb-2" />
+                          <span>System</span>
                         </div>
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     <div>
