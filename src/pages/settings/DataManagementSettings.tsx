@@ -17,7 +17,8 @@ import {
   AlertTriangle, 
   Lock, 
   Check,
-  X
+  X,
+  PlusCircle  // Add this import for the PlusCircle icon
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,6 +54,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogClose,
+  DialogFooter // Add this import for DialogFooter
 } from "@/components/ui/dialog"
 import {
   Form,
